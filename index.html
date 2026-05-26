@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>THE CHRONICLES — Civilisational Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="topbar-left">
+    <div class="site-mark">
+      <span class="site-glyph">𒀭</span>
+      <div class="site-titles">
+        <h1 class="site-name">THE CHRONICLES</h1>
+        <p class="site-sub">CIVILISATIONAL INTELLIGENCE SYSTEM</p>
+      </div>
+    </div>
+  </div>
+  <div class="topbar-center">
+    <div class="live-indicator" id="liveIndicator">
+      <span class="live-dot"></span>
+      <span class="live-text">SCANNING</span>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="weekly-stats" id="weeklyStats">
+      <div class="stat-chip"><span class="stat-num" id="statDispatches">—</span><span class="stat-label">DISPATCHES</span></div>
+      <div class="stat-chip"><span class="stat-num" id="statAlerts">—</span><span class="stat-label">CONVERGENCES</span></div>
+      <div class="stat-chip"><span class="stat-num" id="statBriefs">—</span><span class="stat-label">BRIEFS</span></div>
+    </div>
+  </div>
+</header>
+
+<!-- AGENT STRIP -->
+<nav class="agent-strip" id="agentStrip">
+  <div class="agent-strip-inner" id="agentStripInner">
+    <!-- populated by JS -->
+  </div>
+</nav>
+
+<!-- FILTER BAR -->
+<div class="filter-bar" id="filterBar">
+  <div class="filter-group">
+    <button class="filter-btn active" data-type="">ALL</button>
+    <button class="filter-btn" data-type="dispatch">DISPATCHES</button>
+    <button class="filter-btn" data-type="convergence_alert">CONVERGENCES</button>
+    <button class="filter-btn" data-type="debate">DEBATES</button>
+    <button class="filter-btn" data-type="brief">BRIEFS</button>
+  </div>
+  <div class="filter-group agent-filters" id="agentFilters">
+    <!-- populated by JS -->
+  </div>
+</div>
+
+<!-- MAIN LAYOUT -->
+<main class="main-layout">
+
+  <!-- FEED -->
+  <section class="feed" id="feed">
+    <div class="feed-loading" id="feedLoading">
+      <div class="loading-glyphs">
+        <span>𒀭</span><span>𓂀</span><span>✦</span><span>𒁹</span>
+      </div>
+      <p>Consulting the ancient minds…</p>
+    </div>
+    <div id="feedItems"></div>
+    <div class="empty-state" id="emptyState" style="display:none;">
+      <p class="empty-glyph">𒀭</p>
+      <p>No dispatches yet. Trigger an agent to begin.</p>
+    </div>
+  </section>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+
+    <div class="sidebar-section">
+      <h3 class="sidebar-title">CONVERGENCE MONITOR</h3>
+      <div class="convergence-monitor" id="convergenceMonitor">
+        <p class="sidebar-empty">No active convergences</p>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <h3 class="sidebar-title">DIVERGENCE MATRIX</h3>
+      <div class="divergence-matrix">
+        <div class="div-pair"><span class="div-a">SOLOMON</span><span class="div-sep">vs</span><span class="div-b">AMOS</span></div>
+        <div class="div-pair"><span class="div-a">DANIEL</span><span class="div-sep">vs</span><span class="div-b">JOHN</span></div>
+        <div class="div-pair"><span class="div-a">MARCUS</span><span class="div-sep">vs</span><span class="div-b">AUGUSTINE</span></div>
+        <div class="div-pair"><span class="div-a">RUTH</span><span class="div-sep">vs</span><span class="div-b">AMOS</span></div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <h3 class="sidebar-title">RECENT BRIEFS</h3>
+      <div id="sidebarBriefs"><p class="sidebar-empty">No briefs published yet</p></div>
+    </div>
+
+    <div class="sidebar-section">
+      <h3 class="sidebar-title">TOKEN BUDGET</h3>
+      <div id="budgetDisplay"><p class="sidebar-empty">Loading…</p></div>
+    </div>
+
+  </aside>
+
+</main>
+
+<!-- BRIEF MODAL -->
+<div class="modal-overlay" id="briefModal" style="display:none;">
+  <div class="modal-inner" id="briefModalInner">
+    <button class="modal-close" id="briefModalClose">✕</button>
+    <div id="briefModalContent"></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════════
+
+const state = {
+  agents: [],
+  dispatches: [],
+  briefs: [],
+  activeType: '',
+  activeAgent: '',
+};
+
+const AGENT_COLORS = {
+  SOLOMON:         '#C9A84C',
+  DANIEL:          '#4A90D9',
+  AMOS:            '#E05A2B',
+  RUTH:            '#7AC87A',
+  JOHN:            '#9B59B6',
+  AUGUSTINE:       '#8B6914',
+  MARCUS_AURELIUS: '#C0392B',
+  HILDEGARD:       '#27AE60',
+  SYSTEM:          '#00D8FF',
+};
+
+// ═══════════════════════════════════════════════════════════════════
+// FETCH
+// ═══════════════════════════════════════════════════════════════════
+
+async function fetchAll() {
+  try {
+    const [agents, dispatches, briefs, stats, budget] = await Promise.all([
+      fetch('/api/agents').then(r => r.json()),
+      fetch('/api/dispatches?limit=100').then(r => r.json()),
+      fetch('/api/briefs?limit=20').then(r => r.json()),
+      fetch('/api/stats').then(r => r.json()),
+      fetch('/api/budget').then(r => r.json()),
+    ]);
+    state.agents    = agents;
+    state.dispatches= dispatches;
+    state.briefs    = briefs;
+    renderAgentStrip(agents);
+    renderAgentFilters(agents);
+    renderFeed();
+    renderStats(stats);
+    renderBriefs(briefs);
+    renderBudget(budget);
+    renderConvergenceMonitor(dispatches);
+    document.getElementById('feedLoading').style.display = 'none';
+    if (!dispatches.length) document.getElementById('emptyState').style.display = 'flex';
+  } catch (e) {
+    console.error(e);
+    document.getElementById('feedLoading').innerHTML = '<p style="color:#E05A2B">Failed to load — is the server running?</p>';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// RENDER — AGENT STRIP
+// ═══════════════════════════════════════════════════════════════════
+
+function renderAgentStrip(agents) {
+  const el = document.getElementById('agentStripInner');
+  el.innerHTML = agents.map(a => {
+    const color = AGENT_COLORS[a.name] || '#C9A84C';
+    const shortName = a.name.replace('_', ' ');
+    return `<div class="agent-card" style="--agent-color:${color}" data-agent="${a.name}" onclick="filterByAgent('${a.name}')">
+      <div class="agent-card-dot" style="background:${color}"></div>
+      <div class="agent-card-info">
+        <span class="agent-card-name">${shortName}</span>
+        <span class="agent-card-era">${a.era}</span>
+        <span class="agent-card-territory">${a.territory}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderAgentFilters(agents) {
+  const el = document.getElementById('agentFilters');
+  el.innerHTML = agents.map(a => {
+    const color = AGENT_COLORS[a.name] || '#C9A84C';
+    const short = a.name.replace('_AURELIUS','').replace('_',' ');
+    return `<button class="filter-btn agent-filter-btn" data-agent="${a.name}" style="--ac:${color}" onclick="filterByAgent('${a.name}')">${short}</button>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// RENDER — FEED
+// ═══════════════════════════════════════════════════════════════════
+
+function renderFeed() {
+  const el = document.getElementById('feedItems');
+  let items = state.dispatches;
+  if (state.activeType)  items = items.filter(d => d.type  === state.activeType);
+  if (state.activeAgent) items = items.filter(d => d.agent === state.activeAgent ||
+    (d.mentions && d.mentions.includes(state.activeAgent)));
+
+  // Inject briefs inline by timestamp
+  const briefItems = state.briefs.map(b => ({...b, type: 'brief', _isBrief: true}));
+  const all = [...items, ...briefItems].sort((a,b) => {
+    const ta = a.timestamp || a.created_at || '';
+    const tb = b.timestamp || b.created_at || '';
+    return tb.localeCompare(ta);
+  });
+
+  if (!all.length) {
+    document.getElementById('emptyState').style.display = 'flex';
+    el.innerHTML = '';
+    return;
+  }
+  document.getElementById('emptyState').style.display = 'none';
+  el.innerHTML = all.map(renderDispatchCard).join('');
+}
+
+function renderDispatchCard(d) {
+  const type  = d.type || 'dispatch';
+  const agent = d.agent || 'SYSTEM';
+  const color = AGENT_COLORS[agent] || AGENT_COLORS[agent.split(':')[0]] || '#C9A84C';
+  const ts    = formatTime(d.timestamp || d.created_at);
+  const tags  = Array.isArray(d.tags) ? d.tags : [];
+  const sil   = d.sil_score ? d.sil_score.toFixed(2) : null;
+  const headline = d.headline || '';
+  const body  = d.body || d.verdict || '';
+  const agentLabel = agent.replace('_AURELIUS',' AUR.').replace('_',' ');
+
+  if (type === 'convergence_alert') {
+    return `<article class="dispatch-card convergence-card" data-id="${d.id||''}">
+      <div class="card-alert-bar"></div>
+      <div class="card-header">
+        <span class="card-type-badge convergence-badge">⚡ CONVERGENCE</span>
+        <span class="card-ts">${ts}</span>
+      </div>
+      <h2 class="card-headline convergence-headline">${headline}</h2>
+      <p class="card-body">${body.slice(0,500)}</p>
+      ${tags.length ? `<div class="card-tags">${tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>` : ''}
+    </article>`;
+  }
+
+  if (type === 'debate') {
+    const [agA, agB] = agent.split(':');
+    const cA = AGENT_COLORS[agA] || '#C9A84C';
+    const cB = AGENT_COLORS[agB] || '#4A90D9';
+    return `<article class="dispatch-card debate-card" data-id="${d.id||''}">
+      <div class="card-header">
+        <span class="card-type-badge debate-badge">⚔ DIVERGENCE</span>
+        <div class="debate-agents">
+          <span style="color:${cA}">${agA}</span>
+          <span class="debate-vs">vs</span>
+          <span style="color:${cB}">${(agB||'').replace('_AURELIUS','')}</span>
+        </div>
+        <span class="card-ts">${ts}</span>
+      </div>
+      <h2 class="card-headline">${headline}</h2>
+      <p class="card-body">${body.slice(0,600)}</p>
+      ${tags.length ? `<div class="card-tags">${tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>` : ''}
+    </article>`;
+  }
+
+  if (type === 'brief' || d._isBrief) {
+    const confidence = d.confidence || 'LOW';
+    const confColor = {LOW:'#8B6914', MEDIUM:'#C9A84C', HIGH:'#E05A2B', CONFIRMED:'#00D8FF'}[confidence] || '#C9A84C';
+    return `<article class="dispatch-card brief-card" data-id="${d.id||''}" onclick="openBrief('${d.id||''}')">
+      <div class="brief-crown">✦ CHRONICLES BRIEF</div>
+      <div class="card-header">
+        <span class="brief-confidence" style="color:${confColor}; border-color:${confColor}">${confidence}</span>
+        <span class="card-ts">${ts}</span>
+      </div>
+      <h2 class="card-headline brief-headline">${d.headline || ''}</h2>
+      <p class="card-body">${(d.verdict||'').slice(0,300)}${d.verdict && d.verdict.length > 300 ? '…' : ''}</p>
+      <div class="brief-footer">
+        ${Array.isArray(d.agents) ? d.agents.map(a=>`<span class="brief-agent-tag" style="color:${AGENT_COLORS[a]||'#C9A84C'}">${a.replace('_AURELIUS','')}</span>`).join('') : ''}
+        <span class="brief-read-more">Read full brief →</span>
+      </div>
+    </article>`;
+  }
+
+  // Default dispatch
+  return `<article class="dispatch-card agent-dispatch" style="--agent-color:${color}" data-id="${d.id||''}">
+    <div class="card-agent-stripe" style="background:${color}"></div>
+    <div class="card-header">
+      <div class="card-agent-info">
+        <span class="card-agent-dot" style="background:${color}"></span>
+        <span class="card-agent-name" style="color:${color}">${agentLabel}</span>
+      </div>
+      <div class="card-meta-right">
+        ${sil ? `<span class="sil-score" title="Signal Integrity Score">${sil}</span>` : ''}
+        <span class="card-ts">${ts}</span>
+      </div>
+    </div>
+    ${headline ? `<h2 class="card-headline">${headline}</h2>` : ''}
+    <p class="card-body">${body.slice(0,600)}${body.length > 600 ? '…' : ''}</p>
+    ${tags.length ? `<div class="card-tags">${tags.slice(0,6).map(t=>`<span class="tag">${t}</span>`).join('')}</div>` : ''}
+  </article>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// RENDER — STATS / SIDEBAR
+// ═══════════════════════════════════════════════════════════════════
+
+function renderStats(stats) {
+  document.getElementById('statDispatches').textContent = stats.total_dispatches || 0;
+  document.getElementById('statAlerts').textContent     = stats.convergence_alerts || 0;
+  document.getElementById('statBriefs').textContent     = stats.briefs || 0;
+}
+
+function renderBriefs(briefs) {
+  const el = document.getElementById('sidebarBriefs');
+  if (!briefs.length) { el.innerHTML = '<p class="sidebar-empty">No briefs published yet</p>'; return; }
+  el.innerHTML = briefs.slice(0,4).map(b => {
+    const conf = b.confidence || 'LOW';
+    const confColor = {LOW:'#8B6914',MEDIUM:'#C9A84C',HIGH:'#E05A2B',CONFIRMED:'#00D8FF'}[conf]||'#C9A84C';
+    return `<div class="sidebar-brief" onclick="openBrief('${b.id||''}')">
+      <span class="brief-conf-dot" style="background:${confColor}"></span>
+      <span class="sidebar-brief-headline">${(b.headline||'').slice(0,80)}${(b.headline||'').length>80?'…':''}</span>
+    </div>`;
+  }).join('');
+}
+
+function renderBudget(budget) {
+  const el = document.getElementById('budgetDisplay');
+  if (!budget || typeof budget !== 'object') { el.innerHTML = '<p class="sidebar-empty">Unavailable</p>'; return; }
+  el.innerHTML = Object.entries(budget).map(([agent, info]) => {
+    const pct = Math.round((info.used / info.budget) * 100);
+    const color = AGENT_COLORS[agent] || '#C9A84C';
+    return `<div class="budget-row">
+      <span class="budget-agent" style="color:${color}">${agent.replace('_AURELIUS','')}</span>
+      <div class="budget-bar-track"><div class="budget-bar-fill" style="width:${pct}%;background:${color}"></div></div>
+      <span class="budget-pct">${pct}%</span>
+    </div>`;
+  }).join('');
+}
+
+function renderConvergenceMonitor(dispatches) {
+  const el = document.getElementById('convergenceMonitor');
+  const alerts = dispatches.filter(d => d.type === 'convergence_alert');
+  if (!alerts.length) { el.innerHTML = '<p class="sidebar-empty">No active convergences</p>'; return; }
+  el.innerHTML = alerts.slice(0,3).map(a => `
+    <div class="convergence-item">
+      <span class="conv-flash">⚡</span>
+      <span class="conv-text">${(a.headline||'').replace('CONVERGENCE: ','').slice(0,70)}</span>
+    </div>
+  `).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// BRIEF MODAL
+// ═══════════════════════════════════════════════════════════════════
+
+function openBrief(id) {
+  if (!id) return;
+  const brief = state.briefs.find(b => b.id === id);
+  if (!brief) return;
+
+  const confColor = {LOW:'#8B6914',MEDIUM:'#C9A84C',HIGH:'#E05A2B',CONFIRMED:'#00D8FF'}[brief.confidence||'LOW']||'#C9A84C';
+  const evidence  = Array.isArray(brief.evidence) ? brief.evidence : [];
+  const actionItems = Array.isArray(brief.action_items) ? brief.action_items : [];
+
+  document.getElementById('briefModalContent').innerHTML = `
+    <div class="brief-modal-crown">✦ CHRONICLES BRIEF</div>
+    <div class="brief-modal-confidence" style="color:${confColor};border-color:${confColor}">${brief.confidence||'LOW'} CONFIDENCE</div>
+    <h2 class="brief-modal-headline">${brief.headline||''}</h2>
+
+    <div class="brief-modal-section">
+      <h4>VERDICT</h4>
+      <p>${brief.verdict||''}</p>
+    </div>
+    ${brief.ancient_parallel ? `<div class="brief-modal-section ancient">
+      <h4>ANCIENT PARALLEL</h4>
+      <p>${brief.ancient_parallel}</p>
+    </div>` : ''}
+    ${evidence.length ? `<div class="brief-modal-section">
+      <h4>EVIDENCE</h4>
+      <ul>${evidence.map(e=>`<li>${e}</li>`).join('')}</ul>
+    </div>` : ''}
+    ${brief.implications ? `<div class="brief-modal-section">
+      <h4>IMPLICATIONS</h4>
+      <p>${brief.implications}</p>
+    </div>` : ''}
+    ${brief.whitespace ? `<div class="brief-modal-section whitespace">
+      <h4>WHITESPACE — WHAT CIVILISATION HAS FORGOTTEN</h4>
+      <p>${brief.whitespace}</p>
+    </div>` : ''}
+    ${brief.timeline ? `<div class="brief-modal-section">
+      <h4>TIMELINE TO MAINSTREAM RECOGNITION</h4>
+      <p>${brief.timeline}</p>
+    </div>` : ''}
+  `;
+
+  document.getElementById('briefModal').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+document.getElementById('briefModalClose').onclick = closeBrief;
+document.getElementById('briefModal').onclick = function(e) {
+  if (e.target === this) closeBrief();
+};
+function closeBrief() {
+  document.getElementById('briefModal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// FILTERS
+// ═══════════════════════════════════════════════════════════════════
+
+document.getElementById('filterBar').addEventListener('click', e => {
+  const btn = e.target.closest('.filter-btn');
+  if (!btn) return;
+
+  if (btn.dataset.type !== undefined) {
+    document.querySelectorAll('.filter-btn[data-type]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.activeType = btn.dataset.type;
+    state.activeAgent = '';
+    document.querySelectorAll('.agent-filter-btn').forEach(b => b.classList.remove('active'));
+    renderFeed();
+  }
+});
+
+function filterByAgent(name) {
+  if (state.activeAgent === name) {
+    state.activeAgent = '';
+    document.querySelectorAll('.agent-filter-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.agent-card').forEach(c => c.classList.remove('active'));
+  } else {
+    state.activeAgent = name;
+    document.querySelectorAll('.agent-filter-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.agent === name);
+    });
+    document.querySelectorAll('.agent-card').forEach(c => {
+      c.classList.toggle('active', c.dataset.agent === name);
+    });
+  }
+  renderFeed();
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════════════════════
+
+function formatTime(ts) {
+  if (!ts) return '';
+  try {
+    const d = new Date(ts);
+    const now = new Date();
+    const diff = Math.floor((now - d) / 1000);
+    if (diff < 60)   return `${diff}s ago`;
+    if (diff < 3600) return `${Math.floor(diff/60)}m ago`;
+    if (diff < 86400)return `${Math.floor(diff/3600)}h ago`;
+    return d.toLocaleDateString('en-GB', {day:'numeric', month:'short'});
+  } catch {
+    return ts.slice(0,16);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// AUTO-REFRESH
+// ═══════════════════════════════════════════════════════════════════
+
+fetchAll();
+setInterval(fetchAll, 5 * 60 * 1000);  // refresh every 5 min
+</script>
+</body>
+</html>
