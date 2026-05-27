@@ -1,0 +1,2301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<title>THE CHRONICLES — Civilisational Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;900&family=Cinzel+Decorative:wght@400;700&family=IM+Fell+English:ital@0;1&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   DESIGN LANGUAGE:
+   Ancient clay tablet ✕ Bloomberg terminal
+   Colour: deep lapis lazuli navy, burnished gold, papyrus cream, 
+           verdigris cyan, blood ochre
+   Type:   Cinzel (ancient Roman inscriptions) for all labels/UI
+           IM Fell English (17th-c letterpress) for body prose
+           Share Tech Mono for data/scores
+   Motif:  Cuneiform-grid scanlines, ruled column dividers, 
+           sigil glyphs, tablet crack textures
+═══════════════════════════════════════════════════════════════ */
+
+:root {
+  --lapis:       #0A0F1E;
+  --lapis-mid:   #0D1525;
+  --lapis-light: #162035;
+  --lapis-rim:   #1E2D4A;
+  --gold:        #C9A84C;
+  --gold-bright: #E8C56A;
+  --gold-dim:    #7A6030;
+  --papyrus:     #E8DFC0;
+  --papyrus-dim: #9A916E;
+  --cyan:        #4ECDC4;
+  --cyan-dim:    #2A7A76;
+  --ochre:       #C4602A;
+  --ochre-dim:   #7A3A18;
+  --violet:      #8B6FC8;
+  --green:       #5AAA72;
+  --green-dim:   #2A5A3A;
+
+  /* Agent colours */
+  --c-solomon:   #C9A84C;
+  --c-daniel:    #4A90D9;
+  --c-amos:      #E05A2B;
+  --c-ruth:      #5AAA72;
+  --c-john:      #9B59B6;
+  --c-augustine: #8B6914;
+  --c-marcus:    #C0392B;
+  --c-hildegard: #27AE60;
+  --c-cassandra: #B8860B;
+  --c-system:    #4ECDC4;
+
+  --font-display: 'Cinzel', serif;
+  --font-deco:    'Cinzel Decorative', serif;
+  --font-body:    'IM Fell English', serif;
+  --font-mono:    'Share Tech Mono', monospace;
+
+  --border: 1px solid rgba(201,168,76,0.18);
+  --border-bright: 1px solid rgba(201,168,76,0.45);
+  --scanline-opacity: 0.025;
+  --transition: 180ms ease;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--lapis);
+  color: var(--papyrus);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.65;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── SCANLINE OVERLAY ─────────────────────────────────────── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0, var(--scanline-opacity)) 2px,
+    rgba(0,0,0, var(--scanline-opacity)) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ── TABLET GRAIN ─────────────────────────────────────────── */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9998;
+  opacity: 0.6;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   TOPBAR
+══════════════════════════════════════════════════════════════ */
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  background: var(--lapis-mid);
+  border-bottom: var(--border-bright);
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0;
+  padding: 0;
+  box-shadow: 0 2px 24px rgba(0,0,0,0.6), 0 1px 0 rgba(201,168,76,0.12);
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  border-right: var(--border);
+}
+
+.site-mark {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.site-glyph {
+  font-size: 26px;
+  opacity: 0.9;
+  filter: drop-shadow(0 0 8px rgba(201,168,76,0.5));
+  animation: glyph-pulse 4s ease-in-out infinite;
+}
+
+@keyframes glyph-pulse {
+  0%, 100% { filter: drop-shadow(0 0 6px rgba(201,168,76,0.4)); }
+  50%       { filter: drop-shadow(0 0 14px rgba(201,168,76,0.8)); }
+}
+
+.site-name {
+  font-family: var(--font-deco);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  color: var(--gold);
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.site-sub {
+  font-family: var(--font-display);
+  font-size: 7.5px;
+  letter-spacing: 0.35em;
+  color: var(--papyrus-dim);
+  text-transform: uppercase;
+  margin-top: 3px;
+}
+
+.topbar-center {
+  padding: 10px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.live-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--cyan);
+  box-shadow: 0 0 8px var(--cyan);
+  animation: live-pulse 2s ease-in-out infinite;
+}
+
+@keyframes live-pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 8px var(--cyan); }
+  50%       { opacity: 0.4; box-shadow: 0 0 3px var(--cyan); }
+}
+
+.live-text {
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  color: var(--cyan);
+}
+
+.topbar-right {
+  padding: 8px 20px;
+  border-left: var(--border);
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.weekly-stats {
+  display: flex;
+  gap: 0;
+}
+
+.stat-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 16px;
+  border-right: var(--border);
+  cursor: default;
+}
+.stat-chip:last-child { border-right: none; }
+
+.stat-num {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  color: var(--gold);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.stat-label {
+  font-family: var(--font-display);
+  font-size: 7px;
+  letter-spacing: 0.25em;
+  color: var(--papyrus-dim);
+  margin-top: 3px;
+  text-transform: uppercase;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   NAV TABS
+══════════════════════════════════════════════════════════════ */
+
+.nav-tabs {
+  background: var(--lapis-mid);
+  border-bottom: var(--border);
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.nav-tabs::-webkit-scrollbar { display: none; }
+
+.nav-tab {
+  flex-shrink: 0;
+  font-family: var(--font-display);
+  font-size: 9.5px;
+  letter-spacing: 0.2em;
+  color: var(--papyrus-dim);
+  padding: 11px 20px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  text-transform: uppercase;
+  transition: var(--transition);
+  white-space: nowrap;
+  position: relative;
+}
+
+.nav-tab:hover { color: var(--papyrus); }
+
+.nav-tab.active {
+  color: var(--gold);
+  border-bottom-color: var(--gold);
+}
+
+.nav-tab-count {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  background: rgba(201,168,76,0.15);
+  color: var(--gold-dim);
+  padding: 1px 5px;
+  border-radius: 2px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   AGENT STRIP
+══════════════════════════════════════════════════════════════ */
+
+.agent-strip {
+  background: var(--lapis-mid);
+  border-bottom: var(--border);
+  padding: 8px 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.agent-strip::-webkit-scrollbar { display: none; }
+
+.agent-strip-inner {
+  display: flex;
+  gap: 8px;
+  min-width: max-content;
+}
+
+.agent-pill {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: var(--transition);
+  background: transparent;
+  flex-shrink: 0;
+}
+
+.agent-pill:hover {
+  border-color: rgba(201,168,76,0.35);
+  background: rgba(201,168,76,0.06);
+}
+
+.agent-pill.active {
+  border-color: var(--agent-color, var(--gold));
+  background: color-mix(in srgb, var(--agent-color, var(--gold)) 12%, transparent);
+}
+
+.agent-pip {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.agent-pill-name {
+  font-family: var(--font-display);
+  font-size: 8.5px;
+  letter-spacing: 0.18em;
+  color: var(--papyrus-dim);
+  text-transform: uppercase;
+  transition: var(--transition);
+}
+
+.agent-pill.active .agent-pill-name {
+  color: var(--agent-color, var(--gold));
+}
+
+.agent-pill-era {
+  font-family: var(--font-mono);
+  font-size: 7px;
+  color: rgba(255,255,255,0.2);
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .agent-pill-era { display: block; }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   MAIN LAYOUT
+══════════════════════════════════════════════════════════════ */
+
+.app-layout {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  grid-template-rows: auto;
+  gap: 0;
+  min-height: calc(100vh - 120px);
+}
+
+@media (max-width: 960px) {
+  .app-layout {
+    grid-template-columns: 1fr;
+  }
+  .sidebar { display: none; }
+  .sidebar.mobile-open { display: flex; }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   PANEL VIEWS (tabs control which is visible)
+══════════════════════════════════════════════════════════════ */
+
+.panel {
+  display: none;
+  flex-direction: column;
+  border-right: var(--border);
+}
+.panel.active { display: flex; }
+
+/* ══════════════════════════════════════════════════════════════
+   FEED PANEL
+══════════════════════════════════════════════════════════════ */
+
+#panelFeed { }
+
+.feed-items { flex: 1; }
+
+/* ── DISPATCH CARD ──────────────────────────────────────────── */
+
+.dispatch-card {
+  border-bottom: var(--border);
+  padding: 20px 24px;
+  position: relative;
+  transition: background var(--transition);
+  cursor: default;
+}
+
+.dispatch-card:hover {
+  background: rgba(201,168,76,0.025);
+}
+
+.dispatch-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--agent-color, transparent);
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+
+.dispatch-card:hover::before { opacity: 1; }
+
+.card-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.card-agent-name {
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--agent-color, var(--gold));
+  font-weight: 600;
+}
+
+.card-era {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: rgba(255,255,255,0.2);
+}
+
+.card-sep {
+  width: 1px;
+  height: 10px;
+  background: rgba(201,168,76,0.2);
+}
+
+.card-ts {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--papyrus-dim);
+  margin-left: auto;
+}
+
+.sil-badge {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  padding: 2px 6px;
+  border: 1px solid rgba(201,168,76,0.2);
+  color: var(--gold-dim);
+  letter-spacing: 0.05em;
+}
+
+.card-headline {
+  font-family: var(--font-display);
+  font-size: 13.5px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--papyrus);
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+
+.card-body {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: rgba(232,223,192,0.75);
+  line-height: 1.7;
+  font-style: italic;
+}
+
+.card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 10px;
+}
+
+.tag {
+  font-family: var(--font-display);
+  font-size: 7.5px;
+  letter-spacing: 0.18em;
+  color: var(--papyrus-dim);
+  padding: 2px 7px;
+  border: 1px solid rgba(201,168,76,0.12);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.tag:hover {
+  border-color: rgba(201,168,76,0.4);
+  color: var(--gold);
+}
+
+/* ── CONVERGENCE CARD ──────────────────────────────────────── */
+
+.convergence-card {
+  background: linear-gradient(135deg,
+    rgba(78,205,196,0.04) 0%,
+    rgba(10,15,30,0) 60%
+  );
+  border-bottom: 1px solid rgba(78,205,196,0.2);
+}
+
+.convergence-card::before {
+  background: var(--cyan) !important;
+  opacity: 1 !important;
+}
+
+.badge {
+  font-family: var(--font-display);
+  font-size: 8px;
+  letter-spacing: 0.25em;
+  padding: 3px 9px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.badge-convergence {
+  color: var(--cyan);
+  border: 1px solid rgba(78,205,196,0.4);
+  background: rgba(78,205,196,0.08);
+}
+
+.badge-divergence {
+  color: var(--ochre);
+  border: 1px solid rgba(196,96,42,0.4);
+  background: rgba(196,96,42,0.08);
+}
+
+.badge-brief {
+  color: var(--gold);
+  border: 1px solid rgba(201,168,76,0.4);
+  background: rgba(201,168,76,0.08);
+}
+
+.badge-cassandra {
+  color: #B8860B;
+  border: 1px solid rgba(184,134,11,0.4);
+  background: rgba(184,134,11,0.08);
+}
+
+/* ── BRIEF CARD ────────────────────────────────────────────── */
+
+.brief-card {
+  cursor: pointer;
+  background: linear-gradient(135deg,
+    rgba(201,168,76,0.06) 0%,
+    rgba(10,15,30,0) 60%
+  );
+  border-bottom: 1px solid rgba(201,168,76,0.2);
+}
+
+.brief-card::before {
+  background: var(--gold) !important;
+  opacity: 1 !important;
+  width: 4px !important;
+}
+
+.brief-crown {
+  font-family: var(--font-deco);
+  font-size: 8px;
+  letter-spacing: 0.4em;
+  color: var(--gold-dim);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.brief-card .card-headline {
+  color: var(--gold-bright);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.conf-badge {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  padding: 2px 8px;
+  letter-spacing: 0.1em;
+}
+
+.brief-footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.brief-agent-chip {
+  font-family: var(--font-display);
+  font-size: 7.5px;
+  letter-spacing: 0.15em;
+  padding: 2px 7px;
+  border: 1px solid rgba(255,255,255,0.1);
+  text-transform: uppercase;
+  color: var(--papyrus-dim);
+}
+
+.brief-read-more {
+  font-family: var(--font-display);
+  font-size: 8.5px;
+  letter-spacing: 0.12em;
+  color: var(--gold-dim);
+  margin-left: auto;
+  text-decoration: none;
+  transition: var(--transition);
+}
+.brief-card:hover .brief-read-more { color: var(--gold); }
+
+/* debate agents display */
+.debate-agents {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+}
+.debate-vs {
+  color: var(--ochre-dim);
+  font-size: 8px;
+}
+
+/* loading */
+.feed-loading {
+  padding: 60px 24px;
+  text-align: center;
+}
+
+.loading-glyphs {
+  font-size: 22px;
+  letter-spacing: 14px;
+  margin-bottom: 16px;
+  animation: glyph-breathe 2s ease-in-out infinite;
+}
+
+@keyframes glyph-breathe {
+  0%, 100% { opacity: 0.4; }
+  50%       { opacity: 1; }
+}
+
+.loading-glyphs span:nth-child(2) { animation-delay: 0.3s; }
+.loading-glyphs span:nth-child(3) { animation-delay: 0.6s; }
+.loading-glyphs span:nth-child(4) { animation-delay: 0.9s; }
+
+.feed-loading p {
+  font-family: var(--font-body);
+  font-style: italic;
+  color: var(--papyrus-dim);
+  font-size: 13px;
+}
+
+.empty-state {
+  padding: 60px 24px;
+  text-align: center;
+}
+.empty-glyph { font-size: 36px; margin-bottom: 12px; opacity: 0.3; }
+.empty-state p {
+  font-family: var(--font-body);
+  font-style: italic;
+  color: var(--papyrus-dim);
+  font-size: 13px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   WHITESPACE PANEL
+══════════════════════════════════════════════════════════════ */
+
+.panel-header {
+  padding: 16px 24px;
+  border-bottom: var(--border);
+  background: var(--lapis-mid);
+}
+
+.panel-title {
+  font-family: var(--font-deco);
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  color: var(--gold);
+  text-transform: uppercase;
+}
+
+.panel-subtitle {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 12px;
+  color: var(--papyrus-dim);
+  margin-top: 4px;
+}
+
+.ws-clusters { flex: 1; overflow-y: auto; }
+
+.ws-cluster {
+  border-bottom: var(--border);
+  padding: 18px 24px;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+
+.ws-cluster:hover { background: rgba(201,168,76,0.03); }
+
+.ws-cluster-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.ws-tag {
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  color: var(--gold);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.ws-count {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--cyan);
+  margin-left: auto;
+}
+
+.ws-observation {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 13px;
+  color: rgba(232,223,192,0.7);
+  line-height: 1.6;
+  margin-bottom: 8px;
+  border-left: 2px solid rgba(201,168,76,0.2);
+  padding-left: 12px;
+}
+
+.ws-agents {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.ws-agent-chip {
+  font-family: var(--font-display);
+  font-size: 7px;
+  letter-spacing: 0.15em;
+  padding: 1px 6px;
+  border: 1px solid rgba(255,255,255,0.08);
+  text-transform: uppercase;
+  color: var(--papyrus-dim);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   COUNCIL PANEL
+══════════════════════════════════════════════════════════════ */
+
+.sessions-list { flex: 1; overflow-y: auto; }
+
+.session-item {
+  border-bottom: var(--border);
+  padding: 16px 24px;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+
+.session-item:hover { background: rgba(201,168,76,0.03); }
+
+.session-topic {
+  font-family: var(--font-display);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: var(--papyrus);
+  margin-bottom: 6px;
+}
+
+.session-consensus {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 12.5px;
+  color: var(--papyrus-dim);
+  line-height: 1.55;
+}
+
+.session-voices {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.voice-chip {
+  font-family: var(--font-display);
+  font-size: 7.5px;
+  letter-spacing: 0.18em;
+  padding: 2px 7px;
+  text-transform: uppercase;
+}
+
+.voice-logos    { color: var(--cyan);  border: 1px solid rgba(78,205,196,0.3); }
+.voice-krisis   { color: var(--ochre); border: 1px solid rgba(196,96,42,0.3); }
+.voice-lacuna   { color: var(--violet);border: 1px solid rgba(139,111,200,0.3); }
+
+/* ══════════════════════════════════════════════════════════════
+   PREDICTIONS PANEL
+══════════════════════════════════════════════════════════════ */
+
+.predictions-list { flex: 1; overflow-y: auto; }
+
+.prediction-item {
+  border-bottom: var(--border);
+  padding: 16px 24px;
+}
+
+.prediction-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.prediction-status {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  padding: 2px 7px;
+  letter-spacing: 0.12em;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.status-pending   { color: var(--gold-dim);  border: 1px solid var(--gold-dim); }
+.status-confirmed { color: var(--green);     border: 1px solid var(--green-dim); }
+.status-refuted   { color: var(--ochre);     border: 1px solid var(--ochre-dim); }
+
+.prediction-headline {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--papyrus);
+  line-height: 1.5;
+}
+
+.prediction-timeline {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--papyrus-dim);
+  margin-top: 4px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   SIDEBAR
+══════════════════════════════════════════════════════════════ */
+
+.sidebar {
+  background: var(--lapis-mid);
+  border-left: var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  max-height: calc(100vh - 120px);
+  position: sticky;
+  top: 120px;
+}
+
+.sb-section {
+  border-bottom: var(--border);
+}
+
+.sb-title {
+  font-family: var(--font-display);
+  font-size: 8px;
+  letter-spacing: 0.3em;
+  color: var(--gold-dim);
+  text-transform: uppercase;
+  padding: 12px 16px 8px;
+  border-bottom: 1px solid rgba(201,168,76,0.08);
+}
+
+.sb-inner { padding: 10px 16px 14px; }
+
+/* Convergence monitor */
+.conv-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.conv-item:last-child { border-bottom: none; }
+
+.conv-glyph {
+  color: var(--cyan);
+  font-size: 11px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.conv-text {
+  font-family: var(--font-body);
+  font-size: 11.5px;
+  color: rgba(232,223,192,0.65);
+  line-height: 1.45;
+  font-style: italic;
+}
+
+/* Divergence pairs */
+.div-pairs { display: flex; flex-direction: column; gap: 5px; }
+
+.div-pair {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-display);
+  font-size: 8px;
+  letter-spacing: 0.12em;
+}
+
+.div-vs {
+  color: var(--ochre-dim);
+  font-size: 7px;
+}
+
+/* Budget bars */
+.budget-row {
+  display: grid;
+  grid-template-columns: 72px 1fr 28px;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 0;
+}
+
+.budget-agent {
+  font-family: var(--font-display);
+  font-size: 7.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.budget-track {
+  height: 3px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.budget-fill {
+  height: 100%;
+  border-radius: 1px;
+  transition: width 600ms ease;
+}
+
+.budget-pct {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  color: var(--papyrus-dim);
+  text-align: right;
+}
+
+/* Recent briefs sidebar */
+.sb-brief {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 7px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.sb-brief:last-child { border-bottom: none; }
+.sb-brief:hover .sb-brief-headline { color: var(--gold); }
+
+.sb-conf-pip {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 5px;
+}
+
+.sb-brief-headline {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 11.5px;
+  color: rgba(232,223,192,0.65);
+  line-height: 1.45;
+  transition: var(--transition);
+}
+
+/* Whitespace sidebar mini */
+.sb-ws-item {
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.sb-ws-item:last-child { border-bottom: none; }
+
+.sb-ws-tag {
+  font-family: var(--font-display);
+  font-size: 7.5px;
+  letter-spacing: 0.15em;
+  color: var(--gold-dim);
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+
+.sb-ws-obs {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 11px;
+  color: rgba(232,223,192,0.5);
+  line-height: 1.4;
+}
+
+.sb-empty {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 11.5px;
+  color: rgba(232,223,192,0.3);
+  padding: 4px 0;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   MODAL — BRIEF PROVENANCE
+══════════════════════════════════════════════════════════════ */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5,8,18,0.88);
+  backdrop-filter: blur(4px);
+  z-index: 500;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 24px 16px;
+  overflow-y: auto;
+}
+
+.modal-box {
+  background: var(--lapis-mid);
+  border: var(--border-bright);
+  width: 100%;
+  max-width: 780px;
+  position: relative;
+  box-shadow: 0 8px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(201,168,76,0.06);
+  animation: modal-enter 220ms ease;
+}
+
+@keyframes modal-enter {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.modal-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  font-family: var(--font-display);
+  font-size: 11px;
+  color: var(--papyrus-dim);
+  background: none;
+  border: none;
+  cursor: pointer;
+  letter-spacing: 0.1em;
+  padding: 4px 8px;
+  transition: var(--transition);
+  z-index: 2;
+}
+.modal-close:hover { color: var(--gold); }
+
+.modal-crown {
+  font-family: var(--font-deco);
+  font-size: 8px;
+  letter-spacing: 0.5em;
+  color: var(--gold-dim);
+  text-transform: uppercase;
+  padding: 16px 24px 0;
+}
+
+.modal-headline {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--gold-bright);
+  line-height: 1.35;
+  padding: 10px 24px 14px;
+  border-bottom: var(--border);
+}
+
+.modal-body { padding: 0; }
+
+.modal-section {
+  padding: 16px 24px;
+  border-bottom: var(--border);
+}
+
+.modal-section-label {
+  font-family: var(--font-display);
+  font-size: 7.5px;
+  letter-spacing: 0.3em;
+  color: var(--gold-dim);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.modal-section p,
+.modal-section .prose {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 14px;
+  color: rgba(232,223,192,0.82);
+  line-height: 1.72;
+}
+
+.modal-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.modal-section ul li {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 13px;
+  color: rgba(232,223,192,0.75);
+  padding: 4px 0 4px 16px;
+  position: relative;
+  line-height: 1.55;
+}
+
+.modal-section ul li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: var(--gold-dim);
+}
+
+.modal-whitespace {
+  background: linear-gradient(135deg,
+    rgba(201,168,76,0.05) 0%,
+    rgba(10,15,30,0) 70%
+  );
+  border-left: 2px solid var(--gold-dim);
+}
+
+.modal-whitespace .modal-section-label { color: var(--gold); }
+
+.modal-ancient {
+  background: linear-gradient(135deg,
+    rgba(139,111,200,0.05) 0%,
+    rgba(10,15,30,0) 70%
+  );
+  border-left: 2px solid var(--violet);
+}
+
+/* Provenance chain */
+.provenance-chain {
+  padding: 16px 24px;
+}
+
+.provenance-label {
+  font-family: var(--font-display);
+  font-size: 7.5px;
+  letter-spacing: 0.3em;
+  color: var(--gold-dim);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.prov-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.prov-step {
+  display: flex;
+  gap: 12px;
+  position: relative;
+}
+
+.prov-step::before {
+  content: '';
+  position: absolute;
+  left: 10px;
+  top: 20px;
+  bottom: -4px;
+  width: 1px;
+  background: rgba(201,168,76,0.12);
+}
+
+.prov-step:last-child::before { display: none; }
+
+.prov-dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid rgba(201,168,76,0.3);
+  background: var(--lapis);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+  margin-top: 2px;
+  color: var(--gold-dim);
+}
+
+.prov-content { padding-bottom: 14px; }
+
+.prov-step-title {
+  font-family: var(--font-display);
+  font-size: 8px;
+  letter-spacing: 0.2em;
+  color: var(--gold-dim);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.prov-step-text {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 12px;
+  color: rgba(232,223,192,0.6);
+  line-height: 1.5;
+}
+
+.prov-voice-exchange {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.prov-voice {
+  padding: 6px 10px;
+  border-left: 2px solid rgba(255,255,255,0.08);
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: rgba(232,223,192,0.6);
+  font-style: italic;
+  line-height: 1.45;
+}
+
+.prov-voice-label {
+  font-family: var(--font-display);
+  font-size: 7px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 3px;
+}
+
+.conf-ribbon {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  padding: 4px 12px;
+  margin: 4px 24px 0;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   MOBILE BOTTOM NAV
+══════════════════════════════════════════════════════════════ */
+
+.mobile-nav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--lapis-mid);
+  border-top: var(--border);
+  z-index: 300;
+  padding: 0 0 env(safe-area-inset-bottom);
+}
+
+@media (max-width: 960px) {
+  .mobile-nav { display: flex; }
+  body { padding-bottom: 60px; }
+  .app-layout { display: block; }
+}
+
+.mobile-nav-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 4px 8px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  gap: 3px;
+  transition: var(--transition);
+}
+
+.mobile-nav-btn:hover,
+.mobile-nav-btn.active {
+  background: rgba(201,168,76,0.06);
+}
+
+.mobile-nav-icon {
+  font-size: 14px;
+  color: var(--papyrus-dim);
+  transition: var(--transition);
+}
+
+.mobile-nav-btn.active .mobile-nav-icon { color: var(--gold); }
+
+.mobile-nav-label {
+  font-family: var(--font-display);
+  font-size: 7px;
+  letter-spacing: 0.15em;
+  color: var(--papyrus-dim);
+  text-transform: uppercase;
+  transition: var(--transition);
+}
+
+.mobile-nav-btn.active .mobile-nav-label { color: var(--gold); }
+
+/* ══════════════════════════════════════════════════════════════
+   MOBILE SIDEBAR TOGGLE
+══════════════════════════════════════════════════════════════ */
+
+@media (max-width: 960px) {
+  .nav-tabs { display: none; }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   SIL DIMENSIONS RADAR (in dispatch hover)
+══════════════════════════════════════════════════════════════ */
+
+.sil-detail {
+  display: none;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.dispatch-card:hover .sil-detail { display: grid; }
+
+.sil-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 4px;
+}
+
+.sil-dim {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.sil-dim-name {
+  font-family: var(--font-mono);
+  font-size: 7.5px;
+  color: var(--papyrus-dim);
+  flex: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.sil-dim-bar {
+  width: 40px;
+  height: 2px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.sil-dim-fill {
+  height: 100%;
+  background: var(--gold-dim);
+  border-radius: 1px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   SCROLLBAR STYLE
+══════════════════════════════════════════════════════════════ */
+
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--lapis); }
+::-webkit-scrollbar-thumb { background: var(--lapis-rim); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--gold-dim); }
+</style>
+</head>
+<body>
+
+<!-- ══ TOPBAR ══════════════════════════════════════════════════════ -->
+<header class="topbar">
+  <div class="topbar-left">
+    <div class="site-mark">
+      <span class="site-glyph">𒀭</span>
+      <div>
+        <div class="site-name">The Chronicles</div>
+        <div class="site-sub">Civilisational Intelligence System</div>
+      </div>
+    </div>
+  </div>
+  <div class="topbar-center">
+    <div class="live-indicator">
+      <span class="live-dot"></span>
+      <span class="live-text">SCANNING</span>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="weekly-stats">
+      <div class="stat-chip">
+        <span class="stat-num" id="statDispatches">—</span>
+        <span class="stat-label">Dispatches</span>
+      </div>
+      <div class="stat-chip">
+        <span class="stat-num" id="statConverge">—</span>
+        <span class="stat-label">Convergences</span>
+      </div>
+      <div class="stat-chip">
+        <span class="stat-num" id="statBriefs">—</span>
+        <span class="stat-label">Briefs</span>
+      </div>
+      <div class="stat-chip" id="statWsChip" style="display:none">
+        <span class="stat-num" id="statWhitespace">—</span>
+        <span class="stat-label">Whitespace</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ══ AGENT STRIP ═════════════════════════════════════════════════ -->
+<nav class="agent-strip" id="agentStrip">
+  <div class="agent-strip-inner" id="agentStripInner"></div>
+</nav>
+
+<!-- ══ NAV TABS (desktop) ══════════════════════════════════════════ -->
+<nav class="nav-tabs" id="navTabs">
+  <button class="nav-tab active" data-panel="feed">
+    Intelligence Feed <span class="nav-tab-count" id="cntFeed">0</span>
+  </button>
+  <button class="nav-tab" data-panel="whitespace">
+    Whitespace Map <span class="nav-tab-count" id="cntWs">0</span>
+  </button>
+  <button class="nav-tab" data-panel="council">
+    Council Sessions <span class="nav-tab-count" id="cntCouncil">0</span>
+  </button>
+  <button class="nav-tab" data-panel="predictions">
+    Predictions <span class="nav-tab-count" id="cntPred">0</span>
+  </button>
+</nav>
+
+<!-- ══ APP LAYOUT ══════════════════════════════════════════════════ -->
+<div class="app-layout">
+
+  <!-- ═ MAIN PANELS ════════════════════════════════════════════════ -->
+  <div id="mainPanels">
+
+    <!-- FEED PANEL -->
+    <div class="panel active" id="panelFeed">
+      <div class="feed-loading" id="feedLoading">
+        <div class="loading-glyphs">
+          <span>𒀭</span><span>𓂀</span><span>✦</span><span>𒁹</span>
+        </div>
+        <p>Consulting the ancient minds…</p>
+      </div>
+      <div class="feed-items" id="feedItems"></div>
+      <div class="empty-state" id="emptyState" style="display:none;">
+        <p class="empty-glyph">𒀭</p>
+        <p>No dispatches yet. Trigger an agent to begin.</p>
+      </div>
+    </div>
+
+    <!-- WHITESPACE MAP PANEL -->
+    <div class="panel" id="panelWhitespace">
+      <div class="panel-header">
+        <div class="panel-title">✦ Whitespace Registry</div>
+        <div class="panel-subtitle">What civilisation has abandoned or forgotten — accumulated across all briefs</div>
+      </div>
+      <div class="ws-clusters" id="wsClusters">
+        <div class="feed-loading">
+          <div class="loading-glyphs"><span>𒀭</span></div>
+          <p>Loading whitespace signals…</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- COUNCIL SESSIONS PANEL -->
+    <div class="panel" id="panelCouncil">
+      <div class="panel-header">
+        <div class="panel-title">⚖ Council Sessions</div>
+        <div class="panel-subtitle">LOGOS · KRISIS · LACUNA — the debate layer before synthesis</div>
+      </div>
+      <div class="sessions-list" id="sessionsList">
+        <div class="feed-loading">
+          <div class="loading-glyphs"><span>𒁹</span></div>
+          <p>Loading council records…</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PREDICTIONS PANEL -->
+    <div class="panel" id="panelPredictions">
+      <div class="panel-header">
+        <div class="panel-title">◈ Prediction Ledger</div>
+        <div class="panel-subtitle">ORACLE timeline claims — tracking whether the signal was ahead of mainstream recognition</div>
+      </div>
+      <div class="predictions-list" id="predictionsList">
+        <div class="feed-loading">
+          <div class="loading-glyphs"><span>𓂀</span></div>
+          <p>Loading predictions…</p>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /mainPanels -->
+
+  <!-- ═ SIDEBAR ════════════════════════════════════════════════════ -->
+  <aside class="sidebar" id="sidebar">
+
+    <div class="sb-section">
+      <div class="sb-title">⚡ Convergence Monitor</div>
+      <div class="sb-inner" id="sbConvergence">
+        <p class="sb-empty">No active convergences</p>
+      </div>
+    </div>
+
+    <div class="sb-section">
+      <div class="sb-title">⚔ Divergence Pairs</div>
+      <div class="sb-inner">
+        <div class="div-pairs" id="divPairs">
+          <div class="div-pair">
+            <span style="color:var(--c-solomon)">SOLOMON</span>
+            <span class="div-vs">vs</span>
+            <span style="color:var(--c-amos)">AMOS</span>
+          </div>
+          <div class="div-pair">
+            <span style="color:var(--c-daniel)">DANIEL</span>
+            <span class="div-vs">vs</span>
+            <span style="color:var(--c-john)">JOHN</span>
+          </div>
+          <div class="div-pair">
+            <span style="color:var(--c-marcus)">MARCUS</span>
+            <span class="div-vs">vs</span>
+            <span style="color:var(--c-augustine)">AUGUSTINE</span>
+          </div>
+          <div class="div-pair">
+            <span style="color:var(--c-ruth)">RUTH</span>
+            <span class="div-vs">vs</span>
+            <span style="color:var(--c-amos)">AMOS</span>
+          </div>
+          <div class="div-pair">
+            <span style="color:var(--c-cassandra)">CASSANDRA</span>
+            <span class="div-vs">vs</span>
+            <span style="color:var(--c-daniel)">DANIEL</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sb-section">
+      <div class="sb-title">✦ Recent Briefs</div>
+      <div class="sb-inner" id="sbBriefs">
+        <p class="sb-empty">No briefs yet</p>
+      </div>
+    </div>
+
+    <div class="sb-section">
+      <div class="sb-title">◈ Whitespace Signals</div>
+      <div class="sb-inner" id="sbWhitespace">
+        <p class="sb-empty">No whitespace observations yet</p>
+      </div>
+    </div>
+
+    <div class="sb-section">
+      <div class="sb-title">◉ Token Budget</div>
+      <div class="sb-inner" id="sbBudget">
+        <p class="sb-empty">Loading…</p>
+      </div>
+    </div>
+
+  </aside>
+
+</div><!-- /app-layout -->
+
+<!-- ══ MOBILE NAV ══════════════════════════════════════════════════ -->
+<nav class="mobile-nav" id="mobileNav">
+  <button class="mobile-nav-btn active" data-panel="feed">
+    <span class="mobile-nav-icon">𒀭</span>
+    <span class="mobile-nav-label">Feed</span>
+  </button>
+  <button class="mobile-nav-btn" data-panel="whitespace">
+    <span class="mobile-nav-icon">◈</span>
+    <span class="mobile-nav-label">Whitespace</span>
+  </button>
+  <button class="mobile-nav-btn" data-panel="council">
+    <span class="mobile-nav-icon">⚖</span>
+    <span class="mobile-nav-label">Council</span>
+  </button>
+  <button class="mobile-nav-btn" data-panel="predictions">
+    <span class="mobile-nav-icon">◉</span>
+    <span class="mobile-nav-label">Predict</span>
+  </button>
+  <button class="mobile-nav-btn" data-panel="sidebar">
+    <span class="mobile-nav-icon">𒁹</span>
+    <span class="mobile-nav-label">Intel</span>
+  </button>
+</nav>
+
+<!-- ══ BRIEF MODAL ═════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="briefModal" style="display:none;">
+  <div class="modal-box" id="briefModalBox">
+    <button class="modal-close" id="briefModalClose">✕ CLOSE</button>
+    <div id="briefModalContent"></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════════
+
+const state = {
+  agents:      [],
+  dispatches:  [],
+  briefs:      [],
+  sessions:    [],
+  whitespace:  [],
+  predictions: [],
+  activePanel: 'feed',
+  activeAgent: '',
+  activeType:  '',
+};
+
+const AGENT_COLORS = {
+  SOLOMON:         '#C9A84C',
+  DANIEL:          '#4A90D9',
+  AMOS:            '#E05A2B',
+  RUTH:            '#5AAA72',
+  JOHN:            '#9B59B6',
+  AUGUSTINE:       '#8B6914',
+  MARCUS_AURELIUS: '#C0392B',
+  HILDEGARD:       '#27AE60',
+  CASSANDRA:       '#B8860B',
+  SYSTEM:          '#4ECDC4',
+};
+
+const AGENT_ERAS = {
+  SOLOMON:         '~970 BCE',
+  DANIEL:          '~605 BCE',
+  AMOS:            '~760 BCE',
+  RUTH:            '~1100 BCE',
+  JOHN:            '~90 CE',
+  AUGUSTINE:       '354–430 CE',
+  MARCUS_AURELIUS: '121–180 CE',
+  HILDEGARD:       '1098–1179',
+  CASSANDRA:       '~1200 BCE',
+};
+
+const CONF_COLORS = {
+  LOW:       '#7A6030',
+  MEDIUM:    '#C9A84C',
+  HIGH:      '#C4602A',
+  CONFIRMED: '#4ECDC4',
+};
+
+// ═══════════════════════════════════════════════════════════════════
+// FETCH
+// ═══════════════════════════════════════════════════════════════════
+
+async function fetchAll() {
+  try {
+    const [agents, dispatches, briefs, stats, budget, sessions, whitespace, predictions] =
+      await Promise.all([
+        fetch('/api/agents').then(r => r.json()),
+        fetch('/api/dispatches?limit=100').then(r => r.json()),
+        fetch('/api/briefs?limit=20').then(r => r.json()),
+        fetch('/api/stats').then(r => r.json()),
+        fetch('/api/budget').then(r => r.json()),
+        fetch('/api/sessions').then(r => r.json()),
+        fetch('/api/whitespace?mode=clusters').then(r => r.json()),
+        fetch('/api/predictions').then(r => r.json()),
+      ]);
+
+    state.agents      = agents;
+    state.dispatches  = dispatches;
+    state.briefs      = briefs;
+    state.sessions    = sessions;
+    state.whitespace  = whitespace;
+    state.predictions = predictions;
+
+    renderAgentStrip(agents);
+    renderFeed();
+    renderStats(stats);
+    renderBudget(budget);
+    renderSidebarBriefs(briefs);
+    renderSidebarConvergence(dispatches);
+    renderSidebarWhitespace(whitespace);
+    renderWhitespacePanel(whitespace);
+    renderCouncilPanel(sessions);
+    renderPredictionsPanel(predictions);
+    updateCounts(dispatches, briefs, sessions, whitespace, predictions);
+
+    document.getElementById('feedLoading').style.display = 'none';
+    if (!dispatches.length && !briefs.length) {
+      document.getElementById('emptyState').style.display = 'block';
+    }
+
+    // Show whitespace stat chip if there are observations
+    if (whitespace && whitespace.length > 0) {
+      document.getElementById('statWsChip').style.display = 'flex';
+      document.getElementById('statWhitespace').textContent =
+        whitespace.reduce((s, c) => s + (c.observation_count || 0), 0);
+    }
+
+  } catch (e) {
+    console.error(e);
+    document.getElementById('feedLoading').innerHTML =
+      '<p style="color:#C4602A;font-family:var(--font-body);font-style:italic">Failed to load — is the server running?</p>';
+  }
+}
+
+function updateCounts(dispatches, briefs, sessions, whitespace, predictions) {
+  document.getElementById('cntFeed').textContent    = dispatches.length + briefs.length;
+  document.getElementById('cntWs').textContent      = (whitespace || []).length;
+  document.getElementById('cntCouncil').textContent = (sessions || []).length;
+  document.getElementById('cntPred').textContent    = (predictions || []).length;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// AGENT STRIP
+// ═══════════════════════════════════════════════════════════════════
+
+function renderAgentStrip(agents) {
+  const el = document.getElementById('agentStripInner');
+  el.innerHTML = agents.map(a => {
+    const color = AGENT_COLORS[a.name] || '#C9A84C';
+    const era   = AGENT_ERAS[a.name] || a.era;
+    const label = a.name.replace('_AURELIUS', '').replace('_', ' ');
+    return `<div class="agent-pill" style="--agent-color:${color}" data-agent="${a.name}"
+              onclick="filterByAgent('${a.name}')">
+      <span class="agent-pip" style="background:${color}"></span>
+      <span class="agent-pill-name">${label}</span>
+      <span class="agent-pill-era">${era}</span>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// PANEL NAVIGATION
+// ═══════════════════════════════════════════════════════════════════
+
+function switchPanel(name) {
+  state.activePanel = name;
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.mobile-nav-btn').forEach(b => b.classList.remove('active'));
+
+  const panel = document.getElementById('panel' + name.charAt(0).toUpperCase() + name.slice(1));
+  if (panel) panel.classList.add('active');
+
+  document.querySelectorAll('[data-panel="' + name + '"]').forEach(el => el.classList.add('active'));
+
+  // Mobile sidebar toggle
+  const sidebar = document.getElementById('sidebar');
+  if (name === 'sidebar') {
+    sidebar.style.display = 'flex';
+  } else {
+    sidebar.style.display = '';
+  }
+}
+
+document.getElementById('navTabs').addEventListener('click', e => {
+  const btn = e.target.closest('.nav-tab');
+  if (btn) switchPanel(btn.dataset.panel);
+});
+
+document.getElementById('mobileNav').addEventListener('click', e => {
+  const btn = e.target.closest('.mobile-nav-btn');
+  if (btn) switchPanel(btn.dataset.panel);
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// RENDER — FEED
+// ═══════════════════════════════════════════════════════════════════
+
+function renderFeed() {
+  const el = document.getElementById('feedItems');
+  let items = [...state.dispatches];
+  if (state.activeType)  items = items.filter(d => d.type === state.activeType);
+  if (state.activeAgent) items = items.filter(d =>
+    d.agent === state.activeAgent ||
+    (d.mentions && d.mentions.includes(state.activeAgent))
+  );
+
+  const briefItems = state.briefs.map(b => ({...b, type: 'brief', _isBrief: true}));
+  const all = [...items, ...briefItems].sort((a, b) => {
+    return (b.timestamp || b.created_at || '').localeCompare(a.timestamp || a.created_at || '');
+  });
+
+  if (!all.length) {
+    document.getElementById('emptyState').style.display = 'block';
+    el.innerHTML = '';
+    return;
+  }
+  document.getElementById('emptyState').style.display = 'none';
+  el.innerHTML = all.map(renderCard).join('');
+}
+
+function renderCard(d) {
+  const type  = d.type || 'dispatch';
+  const agent = d.agent || 'SYSTEM';
+  const color = AGENT_COLORS[agent] || AGENT_COLORS[agent.split(':')[0]] || '#C9A84C';
+  const ts    = fmtTime(d.timestamp || d.created_at);
+  const tags  = Array.isArray(d.tags) ? d.tags : [];
+  const sil   = d.sil_score ? d.sil_score.toFixed(2) : null;
+
+  if (type === 'convergence_alert') {
+    return `<article class="dispatch-card convergence-card">
+      <div class="card-meta">
+        <span class="badge badge-convergence">⚡ Convergence</span>
+        <span class="card-ts">${ts}</span>
+      </div>
+      <h2 class="card-headline">${d.headline || ''}</h2>
+      <p class="card-body">${(d.body || '').slice(0,480)}</p>
+      ${tags.length ? `<div class="card-tags">${tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>` : ''}
+    </article>`;
+  }
+
+  if (type === 'debate') {
+    const [agA, agB] = agent.split(':');
+    const cA = AGENT_COLORS[agA] || color;
+    const cB = AGENT_COLORS[agB] || '#4A90D9';
+    return `<article class="dispatch-card" style="--agent-color:${cA}">
+      <div class="card-meta">
+        <span class="badge badge-divergence">⚔ Divergence</span>
+        <div class="debate-agents">
+          <span style="color:${cA};font-family:var(--font-display);font-size:9px;letter-spacing:.12em">${agA}</span>
+          <span class="debate-vs">vs</span>
+          <span style="color:${cB};font-family:var(--font-display);font-size:9px;letter-spacing:.12em">${(agB||'').replace('_AURELIUS','')}</span>
+        </div>
+        <span class="card-ts">${ts}</span>
+      </div>
+      <h2 class="card-headline">${d.headline || ''}</h2>
+      <p class="card-body">${(d.body || '').slice(0,500)}</p>
+      ${tags.length ? `<div class="card-tags">${tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>` : ''}
+    </article>`;
+  }
+
+  if (type === 'brief' || d._isBrief) {
+    const conf      = d.confidence || 'LOW';
+    const confColor = CONF_COLORS[conf] || '#C9A84C';
+    return `<article class="dispatch-card brief-card" onclick="openBrief('${d.id||''}')">
+      <div class="brief-crown">✦ Chronicles Brief</div>
+      <div class="card-meta">
+        <span class="conf-badge" style="color:${confColor};border:1px solid ${confColor};font-family:var(--font-mono);font-size:9px;padding:2px 8px">${conf}</span>
+        <span class="card-ts">${ts}</span>
+      </div>
+      <h2 class="card-headline brief-card-hl">${d.headline || ''}</h2>
+      <p class="card-body">${(d.verdict||'').slice(0,280)}${(d.verdict||'').length>280?'…':''}</p>
+      <div class="brief-footer">
+        ${Array.isArray(d.agents) ? d.agents.map(a=>`<span class="brief-agent-chip" style="color:${AGENT_COLORS[a]||'#C9A84C'}">${a.replace('_AURELIUS','')}</span>`).join('') : ''}
+        <span class="brief-read-more">Read provenance chain →</span>
+      </div>
+    </article>`;
+  }
+
+  // Default agent dispatch
+  const agentLabel = agent.replace('_AURELIUS', ' AUR.').replace('_', ' ');
+  const dims = d.dimensions || {};
+  const hasDims = Object.keys(dims).length > 0;
+
+  const dimHtml = hasDims ? `
+    <div class="sil-detail">
+      <div class="sil-grid">
+        ${Object.entries(dims).map(([k,v])=>`
+          <div class="sil-dim">
+            <span class="sil-dim-name">${k.replace('_',' ')}</span>
+            <div class="sil-dim-bar"><div class="sil-dim-fill" style="width:${Math.round((v||0)*100)}%"></div></div>
+          </div>
+        `).join('')}
+      </div>
+    </div>` : '';
+
+  // Cassandra badge
+  const isCassandra = agent === 'CASSANDRA';
+
+  return `<article class="dispatch-card agent-dispatch" style="--agent-color:${color}">
+    <div class="card-meta">
+      <span class="card-agent-name" style="color:${color}">${agentLabel}</span>
+      <span class="card-sep"></span>
+      <span class="card-era">${AGENT_ERAS[agent] || ''}</span>
+      ${isCassandra ? `<span class="badge badge-cassandra" style="margin-left:6px">Early Signal</span>` : ''}
+      ${sil ? `<span class="sil-badge">${sil}</span>` : ''}
+      <span class="card-ts">${ts}</span>
+    </div>
+    ${d.headline ? `<h2 class="card-headline">${d.headline}</h2>` : ''}
+    <p class="card-body">${(d.body||'').slice(0,560)}${(d.body||'').length>560?'…':''}</p>
+    ${tags.length ? `<div class="card-tags">${tags.slice(0,6).map(t=>`<span class="tag">${t}</span>`).join('')}</div>` : ''}
+    ${dimHtml}
+  </article>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// RENDER — STATS
+// ═══════════════════════════════════════════════════════════════════
+
+function renderStats(stats) {
+  document.getElementById('statDispatches').textContent = stats.total_dispatches   || 0;
+  document.getElementById('statConverge').textContent   = stats.convergence_alerts || 0;
+  document.getElementById('statBriefs').textContent     = stats.briefs             || 0;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// RENDER — SIDEBAR
+// ═══════════════════════════════════════════════════════════════════
+
+function renderSidebarBriefs(briefs) {
+  const el = document.getElementById('sbBriefs');
+  if (!briefs.length) { el.innerHTML = '<p class="sb-empty">No briefs published yet</p>'; return; }
+  el.innerHTML = briefs.slice(0,5).map(b => {
+    const conf  = b.confidence || 'LOW';
+    const color = CONF_COLORS[conf] || '#C9A84C';
+    return `<div class="sb-brief" onclick="openBrief('${b.id||''}')">
+      <span class="sb-conf-pip" style="background:${color}"></span>
+      <span class="sb-brief-headline">${(b.headline||'').slice(0,85)}${(b.headline||'').length>85?'…':''}</span>
+    </div>`;
+  }).join('');
+}
+
+function renderSidebarConvergence(dispatches) {
+  const el     = document.getElementById('sbConvergence');
+  const alerts = dispatches.filter(d => d.type === 'convergence_alert');
+  if (!alerts.length) { el.innerHTML = '<p class="sb-empty">No active convergences</p>'; return; }
+  el.innerHTML = alerts.slice(0,3).map(a => `
+    <div class="conv-item">
+      <span class="conv-glyph">⚡</span>
+      <span class="conv-text">${(a.headline||'').replace('CONVERGENCE: ','').slice(0,80)}</span>
+    </div>
+  `).join('');
+}
+
+function renderSidebarWhitespace(clusters) {
+  const el = document.getElementById('sbWhitespace');
+  if (!clusters || !clusters.length) {
+    el.innerHTML = '<p class="sb-empty">No whitespace observations yet</p>';
+    return;
+  }
+  el.innerHTML = clusters.slice(0,4).map(c => `
+    <div class="sb-ws-item" onclick="switchPanel('whitespace')">
+      <div class="sb-ws-tag">${c.tag} <span style="font-family:var(--font-mono);font-size:7px;color:var(--cyan)">×${c.observation_count}</span></div>
+      <div class="sb-ws-obs">${(c.observations&&c.observations[0]? c.observations[0].observation:'').slice(0,90)}…</div>
+    </div>
+  `).join('');
+}
+
+function renderBudget(budget) {
+  const el = document.getElementById('sbBudget');
+  if (!budget || typeof budget !== 'object') {
+    el.innerHTML = '<p class="sb-empty">Unavailable</p>'; return;
+  }
+  el.innerHTML = Object.entries(budget).map(([agent, info]) => {
+    const pct   = Math.min(100, Math.round((info.used / info.budget) * 100));
+    const color = AGENT_COLORS[agent] || '#C9A84C';
+    const label = agent.replace('_AURELIUS', '').replace('_', ' ');
+    return `<div class="budget-row">
+      <span class="budget-agent" style="color:${color}">${label}</span>
+      <div class="budget-track"><div class="budget-fill" style="width:${pct}%;background:${color}"></div></div>
+      <span class="budget-pct">${pct}%</span>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// RENDER — WHITESPACE PANEL
+// ═══════════════════════════════════════════════════════════════════
+
+function renderWhitespacePanel(clusters) {
+  const el = document.getElementById('wsClusters');
+  if (!clusters || !clusters.length) {
+    el.innerHTML = `<div class="feed-loading"><p class="empty-state" style="padding:40px 24px">
+      <span style="display:block;font-size:28px;margin-bottom:12px;opacity:.3">◈</span>
+      <span style="font-family:var(--font-body);font-style:italic;color:var(--papyrus-dim)">No whitespace observations yet. Once ORACLE publishes its first brief, the registry will begin accumulating what civilisation has forgotten.</span>
+    </p></div>`;
+    return;
+  }
+  el.innerHTML = clusters.map(c => {
+    const obs       = c.observations || [];
+    const agentList = (c.agents || []).map(a =>
+      `<span class="ws-agent-chip" style="color:${AGENT_COLORS[a]||'#C9A84C'}">${a.replace('_AURELIUS','')}</span>`
+    ).join('');
+    const latestObs = obs[0] ? obs[0].observation : '';
+    const moreCount = obs.length > 1 ? obs.length - 1 : 0;
+
+    return `<div class="ws-cluster">
+      <div class="ws-cluster-head">
+        <span class="ws-tag">${c.tag}</span>
+        <span class="ws-count">×${c.observation_count} observation${c.observation_count>1?'s':''}</span>
+      </div>
+      <blockquote class="ws-observation">${latestObs}</blockquote>
+      ${moreCount ? `<p style="font-family:var(--font-display);font-size:8px;letter-spacing:.15em;color:var(--papyrus-dim);margin-bottom:6px">+ ${moreCount} more observation${moreCount>1?'s':''}</p>` : ''}
+      <div class="ws-agents">${agentList}</div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// RENDER — COUNCIL PANEL
+// ═══════════════════════════════════════════════════════════════════
+
+function renderCouncilPanel(sessions) {
+  const el = document.getElementById('sessionsList');
+  if (!sessions || !sessions.length) {
+    el.innerHTML = `<div style="padding:40px 24px;text-align:center">
+      <p style="font-family:var(--font-body);font-style:italic;color:var(--papyrus-dim)">No council sessions yet. The Council debates dispatches scoring above 0.65 SIL.</p>
+    </div>`;
+    return;
+  }
+  el.innerHTML = sessions.map(s => {
+    const exchanges = s.exchanges || [];
+    const voiceTags = ['LOGOS','KRISIS','LACUNA']
+      .filter(v => exchanges.some(e => e.voice === v))
+      .map(v => `<span class="voice-chip voice-${v.toLowerCase()}">${v}</span>`)
+      .join('');
+
+    return `<div class="session-item" onclick="openSessionModal('${s.id||''}')">
+      <div class="session-topic">${s.topic || 'Untitled session'}</div>
+      <p class="session-consensus">${(s.consensus||'').slice(0,180)}${(s.consensus||'').length>180?'…':''}</p>
+      <div class="session-voices">
+        ${voiceTags}
+        <span style="margin-left:auto;font-family:var(--font-mono);font-size:8px;color:var(--papyrus-dim)">${fmtTime(s.created_at)}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// RENDER — PREDICTIONS PANEL
+// ═══════════════════════════════════════════════════════════════════
+
+function renderPredictionsPanel(predictions) {
+  const el = document.getElementById('predictionsList');
+  if (!predictions || !predictions.length) {
+    el.innerHTML = `<div style="padding:40px 24px;text-align:center">
+      <p style="font-family:var(--font-body);font-style:italic;color:var(--papyrus-dim)">No predictions recorded yet. ORACLE briefs with a timeline field will appear here for verification.</p>
+    </div>`;
+    return;
+  }
+  el.innerHTML = predictions.map(p => {
+    const statusClass = 'status-' + (p.status || 'pending');
+    return `<div class="prediction-item">
+      <div class="prediction-head">
+        <span class="prediction-status ${statusClass}">${(p.status||'pending').toUpperCase()}</span>
+        <span class="prediction-headline">${p.headline || ''}</span>
+      </div>
+      <div class="prediction-timeline">⟳ ${p.timeline || ''} &nbsp;·&nbsp; Recorded ${fmtTime(p.created_at)}</div>
+      ${p.evidence ? `<div style="font-family:var(--font-body);font-style:italic;font-size:12px;color:var(--papyrus-dim);margin-top:5px;padding-left:12px;border-left:2px solid rgba(201,168,76,.15)">${p.evidence}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// BRIEF MODAL — FULL PROVENANCE CHAIN
+// ═══════════════════════════════════════════════════════════════════
+
+async function openBrief(id) {
+  if (!id) return;
+
+  // Try local first, then fetch provenance chain
+  const localBrief = state.briefs.find(b => b.id === id);
+
+  let chain;
+  try {
+    chain = await fetch(`/api/brief/${id}`).then(r => r.json());
+  } catch(e) {
+    chain = { brief: localBrief };
+  }
+
+  const brief   = chain.brief || localBrief || {};
+  const session = chain.session;
+  const dispatch= chain.dispatch;
+
+  if (!brief.headline) return;
+
+  const conf      = brief.confidence || 'LOW';
+  const confColor = CONF_COLORS[conf] || '#C9A84C';
+  const evidence  = Array.isArray(brief.evidence) ? brief.evidence : [];
+
+  // Build provenance steps
+  let provenanceHtml = '';
+  if (session || dispatch) {
+    const steps = [];
+
+    if (dispatch) {
+      const dAgent = dispatch.agent || '';
+      const dColor = AGENT_COLORS[dAgent] || '#C9A84C';
+      steps.push(`
+        <div class="prov-step">
+          <div class="prov-dot" style="border-color:${dColor};color:${dColor}">①</div>
+          <div class="prov-content">
+            <div class="prov-step-title">Source Dispatch — <span style="color:${dColor}">${dAgent.replace('_AURELIUS',' AUR.')}</span></div>
+            <div class="prov-step-text">${(dispatch.body||'').slice(0,300)}…</div>
+          </div>
+        </div>`);
+    }
+
+    if (session) {
+      const exchanges = session.exchanges || [];
+      const voiceHtml = exchanges.map(e => {
+        const vc = e.voice === 'LOGOS' ? 'var(--cyan)' :
+                   e.voice === 'KRISIS'? 'var(--ochre)' : 'var(--violet)';
+        return `<div class="prov-voice">
+          <span class="prov-voice-label" style="color:${vc}">${e.voice}</span>
+          ${(e.text||'').slice(0,240)}…
+        </div>`;
+      }).join('');
+
+      steps.push(`
+        <div class="prov-step">
+          <div class="prov-dot" style="border-color:var(--gold-dim);color:var(--gold-dim)">②</div>
+          <div class="prov-content">
+            <div class="prov-step-title">Council Session — ${session.topic||''}</div>
+            <div class="prov-voice-exchange">${voiceHtml}</div>
+          </div>
+        </div>`);
+    }
+
+    steps.push(`
+      <div class="prov-step">
+        <div class="prov-dot" style="border-color:var(--gold);color:var(--gold)">③</div>
+        <div class="prov-content">
+          <div class="prov-step-title">Oracle Synthesis → Brief Published</div>
+          <div class="prov-step-text">ORACLE passed this session. Confidence: ${conf}. Timeline: ${brief.timeline||'—'}</div>
+        </div>
+      </div>`);
+
+    provenanceHtml = `
+      <div class="provenance-chain">
+        <div class="provenance-label">◈ Provenance Chain</div>
+        <div class="prov-steps">${steps.join('')}</div>
+      </div>`;
+  }
+
+  document.getElementById('briefModalContent').innerHTML = `
+    <div class="modal-crown">✦ Chronicles Brief</div>
+    <div style="display:flex;align-items:center;gap:10px;padding:6px 24px 0;">
+      <span class="conf-ribbon" style="color:${confColor};border:1px solid ${confColor}">${conf} CONFIDENCE</span>
+      ${brief.timeline ? `<span style="font-family:var(--font-mono);font-size:9px;color:var(--papyrus-dim)">Timeline: ${brief.timeline}</span>` : ''}
+    </div>
+    <h2 class="modal-headline">${brief.headline}</h2>
+
+    <div class="modal-body">
+      <div class="modal-section">
+        <div class="modal-section-label">Verdict</div>
+        <p>${brief.verdict||''}</p>
+      </div>
+
+      ${brief.ancient_parallel ? `
+      <div class="modal-section modal-ancient">
+        <div class="modal-section-label">Ancient Parallel</div>
+        <p>${brief.ancient_parallel}</p>
+      </div>` : ''}
+
+      ${evidence.length ? `
+      <div class="modal-section">
+        <div class="modal-section-label">Evidence (${evidence.length} data points)</div>
+        <ul>${evidence.map(e=>`<li>${e}</li>`).join('')}</ul>
+      </div>` : ''}
+
+      ${brief.implications ? `
+      <div class="modal-section">
+        <div class="modal-section-label">Implications</div>
+        <p>${brief.implications}</p>
+      </div>` : ''}
+
+      ${brief.whitespace ? `
+      <div class="modal-section modal-whitespace">
+        <div class="modal-section-label">◈ Whitespace — What Civilisation Has Forgotten</div>
+        <p>${brief.whitespace}</p>
+      </div>` : ''}
+
+      ${provenanceHtml}
+
+      ${Array.isArray(brief.agents) && brief.agents.length ? `
+      <div class="modal-section" style="border-bottom:none">
+        <div class="modal-section-label">Contributing Minds</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          ${brief.agents.map(a=>`<span class="brief-agent-chip" style="color:${AGENT_COLORS[a]||'#C9A84C'}">${a.replace('_AURELIUS','')}</span>`).join('')}
+        </div>
+      </div>` : ''}
+    </div>
+  `;
+
+  document.getElementById('briefModal').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+document.getElementById('briefModalClose').onclick = closeBrief;
+document.getElementById('briefModal').onclick = function(e) {
+  if (e.target === this) closeBrief();
+};
+
+function closeBrief() {
+  document.getElementById('briefModal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// SESSION MODAL (simple)
+// ═══════════════════════════════════════════════════════════════════
+
+function openSessionModal(id) {
+  const s = state.sessions.find(x => x.id === id);
+  if (!s) return;
+  const exchanges = s.exchanges || [];
+
+  const content = `
+    <div class="modal-crown">⚖ Council Session</div>
+    <h2 class="modal-headline">${s.topic || 'Untitled Session'}</h2>
+    <div class="modal-body">
+      ${exchanges.map(e => {
+        const vc = e.voice==='LOGOS'?'var(--cyan)':e.voice==='KRISIS'?'var(--ochre)':'var(--violet)';
+        return `<div class="modal-section">
+          <div class="modal-section-label" style="color:${vc}">${e.voice}</div>
+          <p>${e.text||''}</p>
+        </div>`;
+      }).join('')}
+      ${s.consensus ? `<div class="modal-section"><div class="modal-section-label">Consensus</div><p>${s.consensus}</p></div>` : ''}
+      ${s.dissent ? `<div class="modal-section"><div class="modal-section-label">Dissent</div><p>${s.dissent}</p></div>` : ''}
+      ${s.gaps && s.gaps.length ? `<div class="modal-section" style="border-bottom:none">
+        <div class="modal-section-label">Gaps Identified</div>
+        <ul>${s.gaps.map(g=>`<li>${g}</li>`).join('')}</ul>
+      </div>` : ''}
+    </div>
+  `;
+
+  document.getElementById('briefModalContent').innerHTML = content;
+  document.getElementById('briefModal').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// AGENT FILTER
+// ═══════════════════════════════════════════════════════════════════
+
+function filterByAgent(name) {
+  state.activeAgent = (state.activeAgent === name) ? '' : name;
+  document.querySelectorAll('.agent-pill').forEach(p => {
+    p.classList.toggle('active', p.dataset.agent === state.activeAgent);
+  });
+  renderFeed();
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════════════════════
+
+function fmtTime(ts) {
+  if (!ts) return '';
+  try {
+    const d = new Date(ts);
+    const now = new Date();
+    const diff = Math.floor((now - d) / 1000);
+    if (diff < 60)    return `${diff}s ago`;
+    if (diff < 3600)  return `${Math.floor(diff/60)}m ago`;
+    if (diff < 86400) return `${Math.floor(diff/3600)}h ago`;
+    return d.toLocaleDateString('en-GB', { day:'numeric', month:'short' });
+  } catch { return ts.slice(0,10); }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════════
+
+fetchAll();
+setInterval(fetchAll, 5 * 60 * 1000);
+</script>
+</body>
+</html>
