@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<title>THE CHRONICLES</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;900&family=Cinzel+Decorative:wght@400;700&family=IM+Fell+English:ital@0;1&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+<style>
+/* ─────────────────────────────────────────────────────────────────
+   ROOT TOKENS
+───────────────────────────────────────────────────────────────── */
+:root {
+  --bg:          #080C18;
+  --bg1:         #0B1020;
+  --bg2:         #0F1628;
+  --rim:         rgba(201,168,76,0.14);
+  --rim2:        rgba(201,168,76,0.30);
+  --gold:        #C9A84C;
+  --gold-hi:     #E8C96A;
+  --gold-lo:     #6A5520;
+  --paper:       #DDD5B0;
+  --paper-lo:    #7A7254;
+  --cyan:        #3EC9C0;
+  --cyan-lo:     #1A5E5A;
+  --red:         #C4511E;
+  --red-lo:      #6A2A0E;
+  --violet:      #8A6AC8;
+  --green:       #4A9E62;
+
+  --c-SOLOMON:         #C9A84C;
+  --c-DANIEL:          #4A8ED9;
+  --c-AMOS:            #D94E22;
+  --c-RUTH:            #4A9E62;
+  --c-JOHN:            #9060C0;
+  --c-AUGUSTINE:       #A07820;
+  --c-MARCUS_AURELIUS: #B83020;
+  --c-HILDEGARD:       #28A060;
+  --c-CASSANDRA:       #B8860B;
+  --c-SYSTEM:          #3EC9C0;
+
+  --ff-head: 'Cinzel', serif;
+  --ff-deco:  'Cinzel Decorative', serif;
+  --ff-body:  'IM Fell English', serif;
+  --ff-mono:  'Share Tech Mono', monospace;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{height:100%;scroll-behavior:smooth}
+
+body {
+  background: var(--bg);
+  color: var(--paper);
+  font-family: var(--ff-body);
+  font-size: 15px;
+  line-height: 1.65;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* CRT scanlines */
+body::before {
+  content:'';
+  position:fixed;inset:0;
+  background:repeating-linear-gradient(0deg,
+    transparent,transparent 3px,
+    rgba(0,0,0,.06) 3px,rgba(0,0,0,.06) 4px);
+  pointer-events:none;z-index:9000;
+}
+
+/* Grain */
+body::after {
+  content:'';
+  position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23g)' opacity='.05'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:8999;opacity:.5;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   SCROLLBAR
+───────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:rgba(201,168,76,.2);border-radius:2px}
+::-webkit-scrollbar-thumb:hover{background:var(--gold-lo)}
+
+/* ─────────────────────────────────────────────────────────────────
+   TOP BAR — full-width ruled strip
+───────────────────────────────────────────────────────────────── */
+.topbar {
+  position:sticky;top:0;z-index:500;
+  background:var(--bg1);
+  border-bottom:1px solid var(--rim2);
+  display:flex;align-items:stretch;
+  height:52px;
+  box-shadow:0 1px 30px rgba(0,0,0,.7);
+}
+
+.tb-brand {
+  display:flex;align-items:center;gap:12px;
+  padding:0 20px;
+  border-right:1px solid var(--rim);
+  flex-shrink:0;
+}
+
+.tb-glyph {
+  font-size:22px;
+  animation:glowpulse 3.5s ease-in-out infinite;
+  color:var(--gold);
+}
+@keyframes glowpulse{0%,100%{text-shadow:0 0 8px rgba(201,168,76,.4)}50%{text-shadow:0 0 22px rgba(201,168,76,.9)}}
+
+.tb-name {
+  font-family:var(--ff-deco);
+  font-size:13px;
+  letter-spacing:.18em;
+  color:var(--gold);
+  line-height:1;
+  white-space:nowrap;
+}
+.tb-sub {
+  font-family:var(--ff-head);
+  font-size:6.5px;
+  letter-spacing:.4em;
+  color:var(--paper-lo);
+  margin-top:3px;
+  white-space:nowrap;
+}
+
+/* Status pill */
+.tb-live {
+  display:flex;align-items:center;gap:7px;
+  padding:0 20px;
+  border-right:1px solid var(--rim);
+}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px var(--cyan);animation:blink 2s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.live-label{font-family:var(--ff-head);font-size:8px;letter-spacing:.28em;color:var(--cyan)}
+
+/* Stat cluster */
+.tb-stats{display:flex;align-items:stretch;margin-left:auto}
+.tb-stat{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 16px;border-left:1px solid var(--rim);cursor:default;min-width:72px}
+.tb-stat-n{font-family:var(--ff-mono);font-size:20px;color:var(--gold);line-height:1;letter-spacing:-.02em}
+.tb-stat-l{font-family:var(--ff-head);font-size:6px;letter-spacing:.22em;color:var(--paper-lo);margin-top:3px;text-transform:uppercase}
+
+/* ─────────────────────────────────────────────────────────────────
+   AGENT RIBBON — horizontal scrolling pills
+───────────────────────────────────────────────────────────────── */
+.agent-ribbon {
+  background:var(--bg1);
+  border-bottom:1px solid var(--rim);
+  display:flex;
+  overflow-x:auto;
+  scrollbar-width:none;
+  -webkit-overflow-scrolling:touch;
+}
+.agent-ribbon::-webkit-scrollbar{display:none}
+.agent-ribbon-inner{display:flex;padding:8px 16px;gap:7px;min-width:max-content}
+
+.ag-pill {
+  display:flex;align-items:center;gap:6px;
+  padding:5px 11px;
+  border:1px solid rgba(255,255,255,.07);
+  cursor:pointer;
+  transition:all 140ms ease;
+  flex-shrink:0;
+  background:transparent;
+}
+.ag-pill:hover{border-color:rgba(201,168,76,.3);background:rgba(201,168,76,.05)}
+.ag-pill.on{border-color:var(--ac);background:color-mix(in srgb,var(--ac) 14%,transparent)}
+
+.ag-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.ag-name{font-family:var(--ff-head);font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--paper-lo);transition:color 140ms}
+.ag-pill.on .ag-name{color:var(--ac)}
+.ag-era{font-family:var(--ff-mono);font-size:7px;color:rgba(255,255,255,.15)}
+
+/* ─────────────────────────────────────────────────────────────────
+   NAV TABS
+───────────────────────────────────────────────────────────────── */
+.nav-bar {
+  background:var(--bg1);
+  border-bottom:1px solid var(--rim);
+  display:flex;
+  overflow-x:auto;
+  scrollbar-width:none;
+}
+.nav-bar::-webkit-scrollbar{display:none}
+
+.nav-btn {
+  flex-shrink:0;
+  font-family:var(--ff-head);
+  font-size:9px;
+  letter-spacing:.2em;
+  text-transform:uppercase;
+  color:var(--paper-lo);
+  padding:10px 18px;
+  border:none;background:transparent;cursor:pointer;
+  border-bottom:2px solid transparent;
+  transition:all 140ms ease;
+  white-space:nowrap;
+}
+.nav-btn:hover{color:var(--paper)}
+.nav-btn.on{color:var(--gold);border-bottom-color:var(--gold)}
+.nav-cnt{
+  font-family:var(--ff-mono);font-size:8px;
+  background:rgba(201,168,76,.12);color:var(--gold-lo);
+  padding:1px 5px;border-radius:2px;margin-left:5px;vertical-align:middle;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   ROOT LAYOUT  — two columns: main | sidebar
+───────────────────────────────────────────────────────────────── */
+.root-layout {
+  display:grid;
+  grid-template-columns:1fr 288px;
+  height:calc(100vh - 130px);  /* topbar + ribbon + nav */
+  overflow:hidden;
+}
+
+/* each panel scrolls independently */
+.main-col {overflow-y:auto;height:100%}
+.side-col {
+  overflow-y:auto;height:100%;
+  background:var(--bg1);
+  border-left:1px solid var(--rim);
+}
+
+/* panel hide/show */
+.panel{display:none;flex-direction:column}
+.panel.on{display:flex}
+
+/* ─────────────────────────────────────────────────────────────────
+   FEED CARDS
+───────────────────────────────────────────────────────────────── */
+.card {
+  border-bottom:1px solid rgba(201,168,76,.08);
+  padding:18px 22px;
+  position:relative;
+  transition:background 140ms;
+}
+.card::before {
+  content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:var(--ac,transparent);
+  opacity:0;transition:opacity 140ms;
+}
+.card:hover{background:rgba(201,168,76,.025)}
+.card:hover::before{opacity:1}
+
+/* card meta row */
+.c-meta {
+  display:flex;align-items:center;gap:8px;
+  flex-wrap:wrap;
+  margin-bottom:7px;
+}
+.c-agent{font-family:var(--ff-head);font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;font-weight:600;color:var(--ac)}
+.c-era{font-family:var(--ff-mono);font-size:8px;color:rgba(255,255,255,.18)}
+.c-sep{width:1px;height:9px;background:rgba(201,168,76,.18)}
+.c-ts{font-family:var(--ff-mono);font-size:8.5px;color:var(--paper-lo);margin-left:auto}
+
+.c-badge {
+  font-family:var(--ff-head);font-size:7.5px;letter-spacing:.22em;
+  padding:2px 8px;text-transform:uppercase;font-weight:600;
+}
+.badge-conv{color:var(--cyan);border:1px solid rgba(62,201,192,.35);background:rgba(62,201,192,.07)}
+.badge-div {color:var(--red); border:1px solid rgba(196,81,30,.35); background:rgba(196,81,30,.07)}
+.badge-brief{color:var(--gold);border:1px solid rgba(201,168,76,.35);background:rgba(201,168,76,.07)}
+.badge-early{color:#B8860B;   border:1px solid rgba(184,134,11,.35);background:rgba(184,134,11,.07)}
+.badge-sil{
+  font-family:var(--ff-mono);font-size:8.5px;
+  padding:2px 7px;border:1px solid rgba(201,168,76,.18);color:var(--gold-lo);
+}
+
+.c-hl {
+  font-family:var(--ff-head);font-size:13.5px;font-weight:500;
+  letter-spacing:.03em;color:var(--paper);line-height:1.4;
+  margin-bottom:7px;
+}
+.c-body {
+  font-family:var(--ff-body);font-style:italic;
+  font-size:13.5px;color:rgba(221,213,176,.7);line-height:1.72;
+}
+.c-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}
+.tag {
+  font-family:var(--ff-head);font-size:7px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--paper-lo);
+  padding:2px 7px;border:1px solid rgba(201,168,76,.1);
+  cursor:pointer;transition:all 140ms;
+}
+.tag:hover{border-color:rgba(201,168,76,.4);color:var(--gold)}
+
+/* CONVERGENCE card */
+.card.conv{
+  background:linear-gradient(135deg,rgba(62,201,192,.04),transparent 55%);
+  border-bottom:1px solid rgba(62,201,192,.15);
+}
+.card.conv::before{background:var(--cyan);opacity:1;width:3px}
+
+/* BRIEF card */
+.card.brief-card{
+  background:linear-gradient(135deg,rgba(201,168,76,.05),transparent 55%);
+  border-bottom:1px solid rgba(201,168,76,.18);
+  cursor:pointer;
+}
+.card.brief-card::before{background:var(--gold);opacity:1;width:4px}
+.brief-crown{
+  font-family:var(--ff-deco);font-size:7.5px;letter-spacing:.45em;
+  color:var(--gold-lo);text-transform:uppercase;margin-bottom:9px;
+}
+.brief-card .c-hl{color:var(--gold-hi);font-size:15px;font-weight:600}
+.brief-foot{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:11px}
+.brief-chip{font-family:var(--ff-head);font-size:7px;letter-spacing:.13em;padding:2px 7px;border:1px solid rgba(255,255,255,.08);text-transform:uppercase;color:var(--paper-lo)}
+.brief-more{font-family:var(--ff-head);font-size:8px;letter-spacing:.12em;color:var(--gold-lo);margin-left:auto;transition:color 140ms}
+.brief-card:hover .brief-more{color:var(--gold)}
+
+/* SIL dim bars on hover */
+.dim-grid{display:none;grid-template-columns:repeat(2,1fr);gap:3px 10px;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.04)}
+.card:hover .dim-grid{display:grid}
+.dim-row{display:flex;align-items:center;gap:5px}
+.dim-key{font-family:var(--ff-mono);font-size:7px;text-transform:uppercase;letter-spacing:.04em;color:var(--paper-lo);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dim-bar{width:36px;height:2px;background:rgba(255,255,255,.05);border-radius:1px;overflow:hidden;flex-shrink:0}
+.dim-fill{height:100%;background:var(--gold-lo);border-radius:1px}
+
+/* empty / loading */
+.feed-load{padding:55px 22px;text-align:center}
+.load-glyphs{font-size:20px;letter-spacing:12px;margin-bottom:14px;animation:breathe 2s ease-in-out infinite}
+@keyframes breathe{0%,100%{opacity:.3}50%{opacity:1}}
+.feed-load p,.empty-msg p{font-family:var(--ff-body);font-style:italic;color:var(--paper-lo);font-size:13px}
+.empty-msg{padding:55px 22px;text-align:center}
+.empty-glyph{font-size:32px;margin-bottom:10px;opacity:.2}
+
+/* ─────────────────────────────────────────────────────────────────
+   WHITESPACE PANEL
+───────────────────────────────────────────────────────────────── */
+.panel-hdr{padding:15px 22px;border-bottom:1px solid var(--rim);background:var(--bg1)}
+.panel-hdr-title{font-family:var(--ff-deco);font-size:10px;letter-spacing:.28em;color:var(--gold)}
+.panel-hdr-sub{font-family:var(--ff-body);font-style:italic;font-size:12px;color:var(--paper-lo);margin-top:4px}
+
+.ws-item{padding:17px 22px;border-bottom:1px solid rgba(201,168,76,.07);cursor:default}
+.ws-head{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.ws-tag{font-family:var(--ff-head);font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:600}
+.ws-cnt{font-family:var(--ff-mono);font-size:9px;color:var(--cyan);margin-left:auto}
+.ws-obs{
+  font-family:var(--ff-body);font-style:italic;
+  font-size:13.5px;color:rgba(221,213,176,.72);line-height:1.65;
+  border-left:2px solid rgba(201,168,76,.2);padding-left:12px;margin-bottom:7px;
+}
+.ws-agents{display:flex;gap:5px;flex-wrap:wrap}
+.ws-chip{font-family:var(--ff-head);font-size:7px;letter-spacing:.12em;padding:1px 6px;border:1px solid rgba(255,255,255,.07);text-transform:uppercase;color:var(--paper-lo)}
+
+/* ─────────────────────────────────────────────────────────────────
+   COUNCIL PANEL
+───────────────────────────────────────────────────────────────── */
+.sess-item{padding:15px 22px;border-bottom:1px solid rgba(201,168,76,.07);cursor:pointer;transition:background 140ms}
+.sess-item:hover{background:rgba(201,168,76,.03)}
+.sess-topic{font-family:var(--ff-head);font-size:12px;letter-spacing:.04em;color:var(--paper);margin-bottom:5px}
+.sess-consensus{font-family:var(--ff-body);font-style:italic;font-size:12.5px;color:var(--paper-lo);line-height:1.55}
+.sess-foot{display:flex;align-items:center;gap:7px;margin-top:7px}
+.voice-chip{font-family:var(--ff-head);font-size:7.5px;letter-spacing:.17em;padding:2px 7px;text-transform:uppercase}
+.vc-logos {color:var(--cyan);  border:1px solid rgba(62,201,192,.3)}
+.vc-krisis{color:var(--red);   border:1px solid rgba(196,81,30,.3)}
+.vc-lacuna{color:var(--violet);border:1px solid rgba(138,106,200,.3)}
+
+/* ─────────────────────────────────────────────────────────────────
+   PREDICTIONS PANEL
+───────────────────────────────────────────────────────────────── */
+.pred-item{padding:15px 22px;border-bottom:1px solid rgba(201,168,76,.07)}
+.pred-row{display:flex;align-items:flex-start;gap:9px;margin-bottom:5px}
+.pred-st{font-family:var(--ff-mono);font-size:8px;padding:2px 7px;letter-spacing:.1em;flex-shrink:0;margin-top:2px}
+.st-pending  {color:var(--gold-lo);  border:1px solid var(--gold-lo)}
+.st-confirmed{color:var(--green);    border:1px solid var(--green)}
+.st-refuted  {color:var(--red);      border:1px solid var(--red-lo)}
+.pred-hl{font-family:var(--ff-body);font-size:13px;color:var(--paper);line-height:1.5}
+.pred-tl{font-family:var(--ff-mono);font-size:9px;color:var(--paper-lo);margin-top:3px}
+
+/* ─────────────────────────────────────────────────────────────────
+   SIDEBAR
+───────────────────────────────────────────────────────────────── */
+.sb-sec{border-bottom:1px solid var(--rim)}
+.sb-lbl{
+  font-family:var(--ff-head);font-size:7.5px;letter-spacing:.28em;
+  text-transform:uppercase;color:var(--gold-lo);
+  padding:11px 15px 7px;
+  border-bottom:1px solid rgba(201,168,76,.07);
+}
+.sb-body{padding:9px 15px 13px}
+
+/* convergence items */
+.cv-item{display:flex;align-items:flex-start;gap:7px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.03)}
+.cv-item:last-child{border-bottom:none}
+.cv-icon{color:var(--cyan);font-size:10px;flex-shrink:0;margin-top:2px}
+.cv-txt{font-family:var(--ff-body);font-style:italic;font-size:11.5px;color:rgba(221,213,176,.6);line-height:1.4}
+
+/* div pairs */
+.div-pairs{display:flex;flex-direction:column;gap:4px}
+.div-pair{display:flex;align-items:center;gap:5px;font-family:var(--ff-head);font-size:8px;letter-spacing:.1em}
+.dv-vs{color:var(--red-lo);font-size:7px}
+
+/* budget */
+.bud-row{display:grid;grid-template-columns:64px 1fr 30px;align-items:center;gap:6px;padding:3px 0}
+.bud-ag{font-family:var(--ff-head);font-size:7px;letter-spacing:.08em;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bud-track{height:2px;background:rgba(255,255,255,.05);border-radius:1px;overflow:hidden}
+.bud-fill{height:100%;border-radius:1px;transition:width .6s ease}
+.bud-pct{font-family:var(--ff-mono);font-size:7.5px;color:var(--paper-lo);text-align:right}
+
+/* sidebar briefs */
+.sb-brief{display:flex;align-items:flex-start;gap:7px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.03);cursor:pointer;transition:all 140ms}
+.sb-brief:last-child{border-bottom:none}
+.sb-brief:hover .sb-bhl{color:var(--gold)}
+.sb-pip{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.sb-bhl{font-family:var(--ff-body);font-style:italic;font-size:11.5px;color:rgba(221,213,176,.6);line-height:1.42;transition:color 140ms}
+
+/* sidebar whitespace */
+.sb-ws{padding:5px 0;border-bottom:1px solid rgba(255,255,255,.03)}
+.sb-ws:last-child{border-bottom:none}
+.sb-ws-tag{font-family:var(--ff-head);font-size:7.5px;letter-spacing:.12em;color:var(--gold-lo);text-transform:uppercase;margin-bottom:2px;cursor:pointer}
+.sb-ws-obs{font-family:var(--ff-body);font-style:italic;font-size:11px;color:rgba(221,213,176,.45);line-height:1.38}
+
+.sb-empty{font-family:var(--ff-body);font-style:italic;font-size:11.5px;color:rgba(221,213,176,.28);padding:3px 0}
+
+/* ─────────────────────────────────────────────────────────────────
+   MOBILE BOTTOM NAV
+───────────────────────────────────────────────────────────────── */
+.mob-nav {
+  display:none;
+  position:fixed;bottom:0;left:0;right:0;z-index:600;
+  background:var(--bg1);
+  border-top:1px solid var(--rim2);
+  padding-bottom:env(safe-area-inset-bottom,0);
+}
+.mob-nav-inner{display:flex}
+.mob-btn {
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:3px;
+  padding:9px 4px 7px;
+  border:none;background:transparent;cursor:pointer;
+  transition:background 140ms;
+}
+.mob-btn:hover,.mob-btn.on{background:rgba(201,168,76,.06)}
+.mob-icon{font-size:15px;color:var(--paper-lo);transition:color 140ms}
+.mob-btn.on .mob-icon{color:var(--gold)}
+.mob-lbl{font-family:var(--ff-head);font-size:6.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--paper-lo);transition:color 140ms}
+.mob-btn.on .mob-lbl{color:var(--gold)}
+
+/* ─────────────────────────────────────────────────────────────────
+   MODAL
+───────────────────────────────────────────────────────────────── */
+.modal-wrap {
+  position:fixed;inset:0;z-index:800;
+  background:rgba(4,7,15,.87);
+  backdrop-filter:blur(5px);
+  display:flex;align-items:flex-start;justify-content:center;
+  padding:28px 16px;
+  overflow-y:auto;
+}
+.modal {
+  background:var(--bg1);
+  border:1px solid var(--rim2);
+  width:100%;max-width:760px;
+  position:relative;
+  box-shadow:0 12px 80px rgba(0,0,0,.85);
+  animation:modal-in 200ms ease;
+}
+@keyframes modal-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+.modal::before,.modal::after{
+  content:'✦';position:absolute;
+  font-size:9px;color:rgba(201,168,76,.22);pointer-events:none;
+}
+.modal::before{top:10px;left:14px}
+.modal::after{bottom:10px;right:14px}
+
+.m-close{
+  position:absolute;top:12px;right:14px;
+  font-family:var(--ff-head);font-size:10px;letter-spacing:.1em;
+  color:var(--paper-lo);background:none;border:none;cursor:pointer;
+  padding:4px 8px;transition:color 140ms;z-index:2;
+}
+.m-close:hover{color:var(--gold)}
+
+.m-crown{font-family:var(--ff-deco);font-size:7.5px;letter-spacing:.5em;color:var(--gold-lo);padding:15px 22px 0}
+.m-conf{display:flex;align-items:center;gap:10px;padding:6px 22px 0}
+.m-conf-badge{font-family:var(--ff-mono);font-size:9px;padding:3px 10px;letter-spacing:.1em}
+.m-tl{font-family:var(--ff-mono);font-size:9px;color:var(--paper-lo)}
+.m-hl{font-family:var(--ff-head);font-size:17px;font-weight:600;letter-spacing:.04em;color:var(--gold-hi);line-height:1.35;padding:9px 22px 13px;border-bottom:1px solid var(--rim)}
+
+.m-sec{padding:14px 22px;border-bottom:1px solid var(--rim)}
+.m-sec:last-child{border-bottom:none}
+.m-sec-lbl{font-family:var(--ff-head);font-size:7px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold-lo);margin-bottom:7px}
+.m-sec p,.m-sec .prose{font-family:var(--ff-body);font-style:italic;font-size:14px;color:rgba(221,213,176,.82);line-height:1.72}
+.m-sec ul{list-style:none}
+.m-sec ul li{font-family:var(--ff-body);font-style:italic;font-size:13px;color:rgba(221,213,176,.72);padding:3px 0 3px 16px;position:relative;line-height:1.5}
+.m-sec ul li::before{content:'—';position:absolute;left:0;color:var(--gold-lo)}
+
+.m-ws{background:linear-gradient(135deg,rgba(201,168,76,.05),transparent 65%);border-left:2px solid var(--gold-lo) !important}
+.m-ws .m-sec-lbl{color:var(--gold)}
+.m-ws p{color:rgba(221,213,176,.9) !important}
+.m-anc{background:linear-gradient(135deg,rgba(138,106,200,.05),transparent 65%);border-left:2px solid var(--violet) !important}
+.m-anc p{color:rgba(200,185,230,.84) !important}
+
+/* provenance chain */
+.prov-lbl{font-family:var(--ff-head);font-size:7px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold-lo);margin-bottom:11px}
+.prov-steps{display:flex;flex-direction:column;gap:0}
+.prov-step{display:flex;gap:12px;position:relative}
+.prov-step::before{content:'';position:absolute;left:9px;top:20px;bottom:0;width:1px;background:rgba(201,168,76,.1)}
+.prov-step:last-child::before{display:none}
+.prov-dot{width:19px;height:19px;border-radius:50%;border:1px solid rgba(201,168,76,.25);background:var(--bg);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:7.5px;margin-top:1px;color:var(--gold-lo)}
+.prov-body{padding-bottom:14px}
+.prov-step-ttl{font-family:var(--ff-head);font-size:7.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-lo);margin-bottom:4px}
+.prov-step-txt{font-family:var(--ff-body);font-style:italic;font-size:12px;color:rgba(221,213,176,.55);line-height:1.5}
+.prov-exchanges{margin-top:7px;display:flex;flex-direction:column;gap:5px}
+.prov-exchange{padding:5px 10px;border-left:2px solid rgba(255,255,255,.07);font-family:var(--ff-body);font-style:italic;font-size:12px;color:rgba(221,213,176,.55);line-height:1.42}
+.prov-voice-lbl{font-family:var(--ff-head);font-size:6.5px;letter-spacing:.18em;text-transform:uppercase;display:block;margin-bottom:2px}
+
+.m-agents{display:flex;gap:6px;flex-wrap:wrap;padding-top:2px}
+.m-ag-chip{font-family:var(--ff-head);font-size:7.5px;letter-spacing:.12em;text-transform:uppercase;padding:2px 8px;border:1px solid rgba(255,255,255,.08);color:var(--paper-lo)}
+
+/* ─────────────────────────────────────────────────────────────────
+   RESPONSIVE
+───────────────────────────────────────────────────────────────── */
+@media(max-width:960px){
+  .root-layout{
+    grid-template-columns:1fr;
+    height:auto;
+    overflow:visible;
+  }
+  .side-col{display:none;border-left:none;border-top:1px solid var(--rim);height:auto}
+  .side-col.mob-vis{display:block}
+  .main-col{height:auto;overflow:visible}
+  .mob-nav{display:block}
+  body{padding-bottom:60px}
+}
+
+@media(max-width:640px){
+  .tb-brand{padding:0 12px;gap:8px}
+  .tb-name{font-size:11px}
+  .tb-sub{display:none}
+  .tb-live{padding:0 12px}
+  .tb-stat{min-width:56px;padding:0 11px}
+  .tb-stat-n{font-size:17px}
+  .tb-stat-l{font-size:5.5px}
+  .card{padding:14px 15px}
+  .c-hl{font-size:12.5px}
+  .c-body{font-size:13px}
+  .dim-grid{display:none!important}
+  .ws-item,.sess-item,.pred-item{padding:13px 15px}
+  .panel-hdr{padding:12px 15px}
+  .m-hl{font-size:14px;padding:8px 15px 11px}
+  .m-sec{padding:12px 15px}
+  .m-crown{padding:13px 15px 0}
+  .m-conf{padding:5px 15px 0}
+  .modal-wrap{padding:0;align-items:flex-end}
+  .modal{max-height:92vh;overflow-y:auto;animation:modal-mobile 250ms ease}
+  @keyframes modal-mobile{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
+}
+
+@media(max-width:400px){
+  .tb-stat:nth-child(3){display:none}
+  .tb-live{display:none}
+}
+
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ TOPBAR ═══════════════════════════════════════════════════════ -->
+<header class="topbar">
+  <div class="tb-brand">
+    <span class="tb-glyph">𒀭</span>
+    <div>
+      <div class="tb-name">The Chronicles</div>
+      <div class="tb-sub">Civilisational Intelligence System</div>
+    </div>
+  </div>
+  <div class="tb-live">
+    <span class="live-dot"></span>
+    <span class="live-label">SCANNING</span>
+  </div>
+  <div class="tb-stats">
+    <div class="tb-stat">
+      <span class="tb-stat-n" id="sDispatches">—</span>
+      <span class="tb-stat-l">Dispatches</span>
+    </div>
+    <div class="tb-stat">
+      <span class="tb-stat-n" id="sConverge">—</span>
+      <span class="tb-stat-l">Convergences</span>
+    </div>
+    <div class="tb-stat">
+      <span class="tb-stat-n" id="sBriefs">—</span>
+      <span class="tb-stat-l">Briefs</span>
+    </div>
+  </div>
+</header>
+
+<!-- ══ AGENT RIBBON ═════════════════════════════════════════════════ -->
+<nav class="agent-ribbon">
+  <div class="agent-ribbon-inner" id="agentRibbon"></div>
+</nav>
+
+<!-- ══ NAV TABS ═════════════════════════════════════════════════════ -->
+<nav class="nav-bar" id="navBar">
+  <button class="nav-btn on" data-panel="feed">Intelligence Feed <span class="nav-cnt" id="cFeed">0</span></button>
+  <button class="nav-btn" data-panel="whitespace">Whitespace Map <span class="nav-cnt" id="cWs">0</span></button>
+  <button class="nav-btn" data-panel="council">Council Sessions <span class="nav-cnt" id="cCouncil">0</span></button>
+  <button class="nav-btn" data-panel="predictions">Predictions <span class="nav-cnt" id="cPred">0</span></button>
+</nav>
+
+<!-- ══ ROOT LAYOUT ══════════════════════════════════════════════════ -->
+<div class="root-layout">
+
+  <!-- MAIN COLUMN -->
+  <div class="main-col" id="mainCol">
+
+    <!-- FEED -->
+    <div class="panel on" id="panelFeed">
+      <div class="feed-load" id="feedLoading">
+        <div class="load-glyphs">𒀭 𓂀 ✦ 𒁹</div>
+        <p>Consulting the ancient minds…</p>
+      </div>
+      <div id="feedItems"></div>
+      <div class="empty-msg" id="emptyMsg" style="display:none">
+        <p class="empty-glyph">𒀭</p>
+        <p>No dispatches yet. Trigger an agent to begin.</p>
+      </div>
+    </div>
+
+    <!-- WHITESPACE MAP -->
+    <div class="panel" id="panelWhitespace">
+      <div class="panel-hdr">
+        <div class="panel-hdr-title">◈ Whitespace Registry</div>
+        <div class="panel-hdr-sub">What civilisation has abandoned or forgotten — accumulated across all Oracle briefs</div>
+      </div>
+      <div id="wsList"></div>
+    </div>
+
+    <!-- COUNCIL -->
+    <div class="panel" id="panelCouncil">
+      <div class="panel-hdr">
+        <div class="panel-hdr-title">⚖ Council Sessions</div>
+        <div class="panel-hdr-sub">LOGOS · KRISIS · LACUNA — the debate layer before Oracle synthesis</div>
+      </div>
+      <div id="sessionsList"></div>
+    </div>
+
+    <!-- PREDICTIONS -->
+    <div class="panel" id="panelPredictions">
+      <div class="panel-hdr">
+        <div class="panel-hdr-title">◉ Prediction Ledger</div>
+        <div class="panel-hdr-sub">Oracle timeline claims tracked for verification against mainstream recognition</div>
+      </div>
+      <div id="predsList"></div>
+    </div>
+
+    <!-- MOBILE SIDEBAR (shown via mob nav) -->
+    <div class="side-col" id="mobSidebar"></div>
+
+  </div><!-- /main-col -->
+
+  <!-- SIDEBAR (desktop) -->
+  <aside class="side-col" id="desktopSidebar"></aside>
+
+</div><!-- /root-layout -->
+
+<!-- MOBILE NAV -->
+<nav class="mob-nav" id="mobNav">
+  <div class="mob-nav-inner">
+    <button class="mob-btn on" data-panel="feed">
+      <span class="mob-icon">𒀭</span><span class="mob-lbl">Feed</span>
+    </button>
+    <button class="mob-btn" data-panel="whitespace">
+      <span class="mob-icon">◈</span><span class="mob-lbl">Whitespace</span>
+    </button>
+    <button class="mob-btn" data-panel="council">
+      <span class="mob-icon">⚖</span><span class="mob-lbl">Council</span>
+    </button>
+    <button class="mob-btn" data-panel="predictions">
+      <span class="mob-icon">◉</span><span class="mob-lbl">Predict</span>
+    </button>
+    <button class="mob-btn" data-panel="intel">
+      <span class="mob-icon">𒁹</span><span class="mob-lbl">Intel</span>
+    </button>
+  </div>
+</nav>
+
+<!-- MODAL -->
+<div class="modal-wrap" id="modal" style="display:none">
+  <div class="modal" id="modalBox">
+    <button class="m-close" id="modalClose">✕ CLOSE</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<script>
+/* ════════════════════════════════════════════════════════════════
+   CONSTANTS
+════════════════════════════════════════════════════════════════ */
+const AC = {
+  SOLOMON:'#C9A84C', DANIEL:'#4A8ED9', AMOS:'#D94E22', RUTH:'#4A9E62',
+  JOHN:'#9060C0', AUGUSTINE:'#A07820', MARCUS_AURELIUS:'#B83020',
+  HILDEGARD:'#28A060', CASSANDRA:'#B8860B', SYSTEM:'#3EC9C0',
+};
+const ERAS = {
+  SOLOMON:'~970 BCE', DANIEL:'~605 BCE', AMOS:'~760 BCE', RUTH:'~1100 BCE',
+  JOHN:'~90 CE', AUGUSTINE:'354–430 CE', MARCUS_AURELIUS:'121–180 CE',
+  HILDEGARD:'1098–1179', CASSANDRA:'~1200 BCE',
+};
+const CC = {LOW:'#6A5520', MEDIUM:'#C9A84C', HIGH:'#C4511E', CONFIRMED:'#3EC9C0'};
+
+const $ = id => document.getElementById(id);
+
+/* ════════════════════════════════════════════════════════════════
+   STATE
+════════════════════════════════════════════════════════════════ */
+const S = {
+  agents:[], dispatches:[], briefs:[], sessions:[],
+  whitespace:[], predictions:[], agentFilter:'', panel:'feed',
+};
+
+/* ════════════════════════════════════════════════════════════════
+   FETCH
+════════════════════════════════════════════════════════════════ */
+async function load() {
+  try {
+    const [agents, dispatches, briefs, stats, budget, sessions, ws, preds] =
+      await Promise.all([
+        api('/api/agents'),
+        api('/api/dispatches?limit=100'),
+        api('/api/briefs?limit=20'),
+        api('/api/stats'),
+        api('/api/budget'),
+        api('/api/sessions'),
+        api('/api/whitespace?mode=clusters'),
+        api('/api/predictions'),
+      ]);
+    Object.assign(S, {agents, dispatches, briefs, sessions, whitespace: ws, predictions: preds});
+    renderAll(stats, budget);
+    $('feedLoading').style.display = 'none';
+  } catch(e) {
+    $('feedLoading').innerHTML = '<p style="color:#C4511E">Failed to load — is the server running?</p>';
+  }
+}
+
+async function api(url) {
+  const r = await fetch(url);
+  return r.json();
+}
+
+function renderAll(stats, budget) {
+  renderAgentRibbon();
+  renderFeed();
+  renderWhitespace();
+  renderCouncil();
+  renderPredictions();
+  renderSidebar(budget);
+  renderStats(stats);
+  updateCounts();
+}
+
+/* ════════════════════════════════════════════════════════════════
+   AGENT RIBBON
+════════════════════════════════════════════════════════════════ */
+function renderAgentRibbon() {
+  $('agentRibbon').innerHTML = S.agents.map(a => {
+    const color = AC[a.name] || AC.SYSTEM;
+    const label = a.name.replace('_AURELIUS','').replace('_',' ');
+    const era   = ERAS[a.name] || a.era;
+    return `<div class="ag-pill" style="--ac:${color}" data-ag="${a.name}" onclick="filterAgent('${a.name}')">
+      <span class="ag-dot" style="background:${color}"></span>
+      <span class="ag-name">${label}</span>
+      <span class="ag-era">${era}</span>
+    </div>`;
+  }).join('');
+}
+
+function filterAgent(name) {
+  S.agentFilter = S.agentFilter === name ? '' : name;
+  document.querySelectorAll('.ag-pill').forEach(p =>
+    p.classList.toggle('on', p.dataset.ag === S.agentFilter));
+  renderFeed();
+}
+
+/* ════════════════════════════════════════════════════════════════
+   PANEL NAV
+════════════════════════════════════════════════════════════════ */
+function switchPanel(name) {
+  S.panel = name;
+  // hide all panels
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('on'));
+  document.querySelectorAll('.mob-btn').forEach(b => b.classList.remove('on'));
+
+  if (name === 'intel') {
+    // mobile sidebar
+    const mob = $('mobSidebar');
+    mob.classList.add('mob-vis');
+    mob.innerHTML = $('desktopSidebar').innerHTML;
+  } else {
+    $('mobSidebar').classList.remove('mob-vis');
+    const panel = $('panel' + name.charAt(0).toUpperCase() + name.slice(1));
+    if (panel) panel.classList.add('on');
+    document.querySelectorAll(`[data-panel="${name}"]`).forEach(el => el.classList.add('on'));
+  }
+}
+
+$('navBar').addEventListener('click', e => {
+  const b = e.target.closest('.nav-btn');
+  if (b) switchPanel(b.dataset.panel);
+});
+$('mobNav').addEventListener('click', e => {
+  const b = e.target.closest('.mob-btn');
+  if (b) switchPanel(b.dataset.panel);
+});
+
+/* ════════════════════════════════════════════════════════════════
+   STATS
+════════════════════════════════════════════════════════════════ */
+function renderStats(s) {
+  $('sDispatches').textContent = s.total_dispatches   || 0;
+  $('sConverge').textContent   = s.convergence_alerts || 0;
+  $('sBriefs').textContent     = s.briefs             || 0;
+}
+function updateCounts() {
+  $('cFeed').textContent    = S.dispatches.length + S.briefs.length;
+  $('cWs').textContent      = S.whitespace.length;
+  $('cCouncil').textContent = S.sessions.length;
+  $('cPred').textContent    = S.predictions.length;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   FEED
+════════════════════════════════════════════════════════════════ */
+function renderFeed() {
+  let items = [...S.dispatches];
+  if (S.agentFilter) items = items.filter(d =>
+    d.agent === S.agentFilter ||
+    (Array.isArray(d.mentions) && d.mentions.includes(S.agentFilter)));
+
+  const all = [
+    ...items,
+    ...S.briefs.map(b => ({...b, type:'brief', _brief:true}))
+  ].sort((a,b) =>
+    (b.timestamp||b.created_at||'').localeCompare(a.timestamp||a.created_at||'')
+  );
+
+  if (!all.length) {
+    $('emptyMsg').style.display = 'block';
+    $('feedItems').innerHTML = '';
+    return;
+  }
+  $('emptyMsg').style.display = 'none';
+  $('feedItems').innerHTML = all.map(card).join('');
+}
+
+function card(d) {
+  const type  = d.type || 'dispatch';
+  const agent = d.agent || 'SYSTEM';
+  const color = AC[agent] || AC[agent.split(':')[0]] || AC.SYSTEM;
+  const ts    = ago(d.timestamp || d.created_at);
+  const tags  = Array.isArray(d.tags) ? d.tags : [];
+  const sil   = d.sil_score ? d.sil_score.toFixed(2) : null;
+  const tagHtml = tags.length
+    ? `<div class="c-tags">${tags.slice(0,6).map(t=>`<span class="tag">${t}</span>`).join('')}</div>` : '';
+
+  if (type === 'convergence_alert') {
+    return `<article class="card conv">
+      <div class="c-meta">
+        <span class="c-badge badge-conv">⚡ Convergence</span>
+        <span class="c-ts">${ts}</span>
+      </div>
+      <h2 class="c-hl">${d.headline||''}</h2>
+      <p class="c-body">${(d.body||'').slice(0,480)}</p>
+      ${tagHtml}
+    </article>`;
+  }
+
+  if (type === 'debate') {
+    const [agA,agB] = agent.split(':');
+    const cA = AC[agA]||color, cB = AC[agB]||'#4A8ED9';
+    return `<article class="card" style="--ac:${cA}">
+      <div class="c-meta">
+        <span class="c-badge badge-div">⚔ Divergence</span>
+        <span style="font-family:var(--ff-head);font-size:8.5px;letter-spacing:.14em;color:${cA}">${agA}</span>
+        <span style="font-family:var(--ff-head);font-size:7px;color:var(--red-lo)">vs</span>
+        <span style="font-family:var(--ff-head);font-size:8.5px;letter-spacing:.14em;color:${cB}">${(agB||'').replace('_AURELIUS','')}</span>
+        <span class="c-ts">${ts}</span>
+      </div>
+      <h2 class="c-hl">${d.headline||''}</h2>
+      <p class="c-body">${(d.body||'').slice(0,480)}</p>
+      ${tagHtml}
+    </article>`;
+  }
+
+  if (type === 'brief' || d._brief) {
+    const conf  = d.confidence||'LOW';
+    const cc    = CC[conf]||CC.LOW;
+    return `<article class="card brief-card" onclick="openBrief('${d.id||''}')">
+      <div class="brief-crown">✦ Chronicles Brief</div>
+      <div class="c-meta">
+        <span class="m-conf-badge" style="color:${cc};border:1px solid ${cc};font-family:var(--ff-mono);font-size:9px;padding:2px 8px">${conf}</span>
+        <span class="c-ts">${ts}</span>
+      </div>
+      <h2 class="c-hl">${d.headline||''}</h2>
+      <p class="c-body">${(d.verdict||'').slice(0,280)}${(d.verdict||'').length>280?'…':''}</p>
+      <div class="brief-foot">
+        ${Array.isArray(d.agents)?d.agents.map(a=>`<span class="brief-chip" style="color:${AC[a]||AC.SYSTEM}">${a.replace('_AURELIUS','')}</span>`).join(''):''}
+        <span class="brief-more">Read provenance chain →</span>
+      </div>
+    </article>`;
+  }
+
+  // Standard dispatch
+  const label = agent.replace('_AURELIUS',' AUR.').replace('_',' ');
+  const dims  = d.dimensions || {};
+  const dimHtml = Object.keys(dims).length ? `
+    <div class="dim-grid">
+      ${Object.entries(dims).map(([k,v])=>`
+        <div class="dim-row">
+          <span class="dim-key">${k.replace(/_/g,' ')}</span>
+          <div class="dim-bar"><div class="dim-fill" style="width:${Math.round((+v||0)*100)}%"></div></div>
+        </div>`).join('')}
+    </div>` : '';
+
+  return `<article class="card" style="--ac:${color}">
+    <div class="c-meta">
+      <span class="c-agent" style="color:${color}">${label}</span>
+      <span class="c-sep"></span>
+      <span class="c-era">${ERAS[agent]||''}</span>
+      ${agent==='CASSANDRA'?`<span class="c-badge badge-early" style="margin-left:4px">Early Signal</span>`:''}
+      ${sil?`<span class="c-badge badge-sil">${sil}</span>`:''}
+      <span class="c-ts">${ts}</span>
+    </div>
+    ${d.headline?`<h2 class="c-hl">${d.headline}</h2>`:''}
+    <p class="c-body">${(d.body||'').slice(0,560)}${(d.body||'').length>560?'…':''}</p>
+    ${tagHtml}
+    ${dimHtml}
+  </article>`;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   WHITESPACE PANEL
+════════════════════════════════════════════════════════════════ */
+function renderWhitespace() {
+  const el = $('wsList');
+  if (!S.whitespace.length) {
+    el.innerHTML = `<div class="empty-msg"><p class="empty-glyph">◈</p><p>No whitespace observations yet. Published Oracle briefs will populate this registry.</p></div>`;
+    return;
+  }
+  el.innerHTML = S.whitespace.map(c => {
+    const obs = c.observations||[];
+    const latest = obs[0]?.observation || '';
+    const more   = obs.length > 1 ? obs.length - 1 : 0;
+    const agents = (c.agents||[]).map(a =>
+      `<span class="ws-chip" style="color:${AC[a]||AC.SYSTEM}">${a.replace('_AURELIUS','')}</span>`
+    ).join('');
+    return `<div class="ws-item">
+      <div class="ws-head">
+        <span class="ws-tag">${c.tag}</span>
+        <span class="ws-cnt">× ${c.observation_count} signal${c.observation_count>1?'s':''}</span>
+      </div>
+      <blockquote class="ws-obs">${latest}</blockquote>
+      ${more?`<p style="font-family:var(--ff-head);font-size:7.5px;letter-spacing:.14em;color:var(--paper-lo);margin-bottom:6px">+ ${more} more observation${more>1?'s':''}</p>`:''}
+      <div class="ws-agents">${agents}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ════════════════════════════════════════════════════════════════
+   COUNCIL PANEL
+════════════════════════════════════════════════════════════════ */
+function renderCouncil() {
+  const el = $('sessionsList');
+  if (!S.sessions.length) {
+    el.innerHTML = `<div class="empty-msg"><p class="empty-glyph">⚖</p><p>No council sessions yet. Dispatches scoring above 0.65 SIL enter the Council.</p></div>`;
+    return;
+  }
+  el.innerHTML = S.sessions.map(s => {
+    const ex   = s.exchanges||[];
+    const vcs  = ['LOGOS','KRISIS','LACUNA']
+      .filter(v => ex.some(e=>e.voice===v))
+      .map(v=>`<span class="voice-chip vc-${v.toLowerCase()}">${v}</span>`).join('');
+    return `<div class="sess-item" onclick="openSession('${s.id||''}')">
+      <div class="sess-topic">${s.topic||'Untitled session'}</div>
+      <p class="sess-consensus">${(s.consensus||'').slice(0,190)}${(s.consensus||'').length>190?'…':''}</p>
+      <div class="sess-foot">
+        ${vcs}
+        <span style="margin-left:auto;font-family:var(--ff-mono);font-size:7.5px;color:var(--paper-lo)">${ago(s.created_at)}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ════════════════════════════════════════════════════════════════
+   PREDICTIONS PANEL
+════════════════════════════════════════════════════════════════ */
+function renderPredictions() {
+  const el = $('predsList');
+  if (!S.predictions.length) {
+    el.innerHTML = `<div class="empty-msg"><p class="empty-glyph">◉</p><p>No predictions yet. Oracle briefs with a timeline field will appear here for tracking.</p></div>`;
+    return;
+  }
+  el.innerHTML = S.predictions.map(p => `
+    <div class="pred-item">
+      <div class="pred-row">
+        <span class="pred-st st-${p.status||'pending'}">${(p.status||'PENDING').toUpperCase()}</span>
+        <span class="pred-hl">${p.headline||''}</span>
+      </div>
+      <div class="pred-tl">⟳ ${p.timeline||''} &nbsp;·&nbsp; Recorded ${ago(p.created_at)}</div>
+      ${p.evidence?`<p style="font-family:var(--ff-body);font-style:italic;font-size:12px;color:var(--paper-lo);margin-top:5px;padding-left:12px;border-left:2px solid rgba(201,168,76,.12)">${p.evidence}</p>`:''}
+    </div>`).join('');
+}
+
+/* ════════════════════════════════════════════════════════════════
+   SIDEBAR
+════════════════════════════════════════════════════════════════ */
+function renderSidebar(budget) {
+  const html = buildSidebar(budget);
+  $('desktopSidebar').innerHTML = html;
+}
+
+function buildSidebar(budget) {
+  const briefs = S.briefs.slice(0,5);
+  const alerts = S.dispatches.filter(d=>d.type==='convergence_alert').slice(0,3);
+  const wsClusters = S.whitespace.slice(0,4);
+
+  const convHtml = alerts.length
+    ? alerts.map(a=>`<div class="cv-item"><span class="cv-icon">⚡</span><span class="cv-txt">${(a.headline||'').replace('CONVERGENCE: ','').slice(0,80)}</span></div>`).join('')
+    : '<p class="sb-empty">No active convergences</p>';
+
+  const briefsHtml = briefs.length
+    ? briefs.map(b=>{
+        const cc = CC[b.confidence||'LOW']||CC.LOW;
+        return `<div class="sb-brief" onclick="openBrief('${b.id}')">
+          <span class="sb-pip" style="background:${cc}"></span>
+          <span class="sb-bhl">${(b.headline||'').slice(0,85)}${(b.headline||'').length>85?'…':''}</span>
+        </div>`;
+      }).join('')
+    : '<p class="sb-empty">No briefs yet</p>';
+
+  const wsHtml = wsClusters.length
+    ? wsClusters.map(c=>`<div class="sb-ws" onclick="switchPanel('whitespace')">
+        <div class="sb-ws-tag">${c.tag} <span style="color:var(--cyan);font-family:var(--ff-mono);font-size:7px">×${c.observation_count}</span></div>
+        <div class="sb-ws-obs">${((c.observations||[])[0]?.observation||'').slice(0,80)}…</div>
+      </div>`).join('')
+    : '<p class="sb-empty">No whitespace observations yet</p>';
+
+  let budgetHtml = '<p class="sb-empty">Unavailable</p>';
+  if (budget && typeof budget === 'object' && Object.keys(budget).length) {
+    budgetHtml = Object.entries(budget).map(([ag, info]) => {
+      const pct   = Math.min(100, Math.round((info.used/info.budget)*100));
+      const color = AC[ag]||AC.SYSTEM;
+      const label = ag.replace('_AURELIUS','').replace('_',' ');
+      return `<div class="bud-row">
+        <span class="bud-ag" style="color:${color}">${label}</span>
+        <div class="bud-track"><div class="bud-fill" style="width:${pct}%;background:${color}"></div></div>
+        <span class="bud-pct">${pct}%</span>
+      </div>`;
+    }).join('');
+  }
+
+  return `
+    <div class="sb-sec"><div class="sb-lbl">⚡ Convergence Monitor</div><div class="sb-body">${convHtml}</div></div>
+    <div class="sb-sec"><div class="sb-lbl">⚔ Divergence Pairs</div>
+      <div class="sb-body"><div class="div-pairs">
+        ${[['SOLOMON','#C9A84C','AMOS','#D94E22'],['DANIEL','#4A8ED9','JOHN','#9060C0'],
+           ['MARCUS_AURELIUS','#B83020','AUGUSTINE','#A07820'],['RUTH','#4A9E62','AMOS','#D94E22'],
+           ['CASSANDRA','#B8860B','DANIEL','#4A8ED9']].map(([a,ca,b,cb])=>
+          `<div class="div-pair"><span style="color:${ca}">${a.replace('_AURELIUS','')}</span><span class="dv-vs">vs</span><span style="color:${cb}">${b}</span></div>`
+        ).join('')}
+      </div></div>
+    </div>
+    <div class="sb-sec"><div class="sb-lbl">✦ Recent Briefs</div><div class="sb-body">${briefsHtml}</div></div>
+    <div class="sb-sec"><div class="sb-lbl">◈ Whitespace Signals</div><div class="sb-body">${wsHtml}</div></div>
+    <div class="sb-sec"><div class="sb-lbl">◉ Token Budget</div><div class="sb-body">${budgetHtml}</div></div>
+  `;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   BRIEF MODAL
+════════════════════════════════════════════════════════════════ */
+async function openBrief(id) {
+  if (!id) return;
+  let chain;
+  try { chain = await api(`/api/brief/${id}`); }
+  catch { chain = {brief: S.briefs.find(b=>b.id===id)}; }
+
+  const b  = chain.brief || {};
+  const se = chain.session;
+  const di = chain.dispatch;
+  if (!b.headline) return;
+
+  const cc   = CC[b.confidence||'LOW']||CC.LOW;
+  const ev   = Array.isArray(b.evidence) ? b.evidence : [];
+
+  let provHtml = '';
+  if (se || di) {
+    const steps = [];
+    if (di) {
+      const dc = AC[di.agent]||AC.SYSTEM;
+      steps.push(`<div class="prov-step">
+        <div class="prov-dot" style="border-color:${dc};color:${dc}">①</div>
+        <div class="prov-body">
+          <div class="prov-step-ttl">Source Dispatch — <span style="color:${dc}">${di.agent||''}</span></div>
+          <div class="prov-step-txt">${(di.body||'').slice(0,260)}…</div>
+        </div></div>`);
+    }
+    if (se) {
+      const exHtml = (se.exchanges||[]).map(e=>{
+        const vc = e.voice==='LOGOS'?'var(--cyan)':e.voice==='KRISIS'?'var(--red)':'var(--violet)';
+        return `<div class="prov-exchange"><span class="prov-voice-lbl" style="color:${vc}">${e.voice}</span>${(e.text||'').slice(0,220)}…</div>`;
+      }).join('');
+      steps.push(`<div class="prov-step">
+        <div class="prov-dot" style="border-color:var(--gold-lo);color:var(--gold-lo)">②</div>
+        <div class="prov-body">
+          <div class="prov-step-ttl">Council — ${se.topic||''}</div>
+          <div class="prov-exchanges">${exHtml}</div>
+        </div></div>`);
+    }
+    steps.push(`<div class="prov-step">
+      <div class="prov-dot" style="border-color:var(--gold);color:var(--gold)">③</div>
+      <div class="prov-body">
+        <div class="prov-step-ttl">Oracle Synthesis → Published</div>
+        <div class="prov-step-txt">Confidence: ${b.confidence||'—'} · Timeline: ${b.timeline||'—'}</div>
+      </div></div>`);
+
+    provHtml = `<div class="m-sec">
+      <div class="prov-lbl">◈ Provenance Chain</div>
+      <div class="prov-steps">${steps.join('')}</div>
+    </div>`;
+  }
+
+  $('modalContent').innerHTML = `
+    <div class="m-crown">✦ Chronicles Brief</div>
+    <div class="m-conf">
+      <span class="m-conf-badge" style="color:${cc};border:1px solid ${cc}">${b.confidence||'LOW'} CONFIDENCE</span>
+      ${b.timeline?`<span class="m-tl">Timeline: ${b.timeline}</span>`:''}
+    </div>
+    <h2 class="m-hl">${b.headline}</h2>
+    <div>
+      <div class="m-sec"><div class="m-sec-lbl">Verdict</div><p>${b.verdict||''}</p></div>
+      ${b.ancient_parallel?`<div class="m-sec m-anc"><div class="m-sec-lbl">Ancient Parallel</div><p>${b.ancient_parallel}</p></div>`:''}
+      ${ev.length?`<div class="m-sec"><div class="m-sec-lbl">Evidence (${ev.length} points)</div><ul>${ev.map(e=>`<li>${e}</li>`).join('')}</ul></div>`:''}
+      ${b.implications?`<div class="m-sec"><div class="m-sec-lbl">Implications</div><p>${b.implications}</p></div>`:''}
+      ${b.whitespace?`<div class="m-sec m-ws"><div class="m-sec-lbl">◈ Whitespace — What Civilisation Has Forgotten</div><p>${b.whitespace}</p></div>`:''}
+      ${provHtml}
+      ${Array.isArray(b.agents)&&b.agents.length?`<div class="m-sec" style="border-bottom:none"><div class="m-sec-lbl">Contributing Minds</div><div class="m-agents">${b.agents.map(a=>`<span class="m-ag-chip" style="color:${AC[a]||AC.SYSTEM}">${a.replace('_AURELIUS','')}</span>`).join('')}</div></div>`:''}
+    </div>`;
+
+  openModal();
+}
+
+function openSession(id) {
+  const s = S.sessions.find(x=>x.id===id);
+  if (!s) return;
+  $('modalContent').innerHTML = `
+    <div class="m-crown">⚖ Council Session</div>
+    <h2 class="m-hl">${s.topic||'Untitled'}</h2>
+    <div>
+      ${(s.exchanges||[]).map(e=>{
+        const vc = e.voice==='LOGOS'?'var(--cyan)':e.voice==='KRISIS'?'var(--red)':'var(--violet)';
+        return `<div class="m-sec"><div class="m-sec-lbl" style="color:${vc}">${e.voice}</div><p>${e.text||''}</p></div>`;
+      }).join('')}
+      ${s.consensus?`<div class="m-sec"><div class="m-sec-lbl">Consensus</div><p>${s.consensus}</p></div>`:''}
+      ${s.dissent?`<div class="m-sec"><div class="m-sec-lbl">Dissent</div><p>${s.dissent}</p></div>`:''}
+      ${s.gaps&&s.gaps.length?`<div class="m-sec" style="border-bottom:none"><div class="m-sec-lbl">Gaps Identified</div><ul>${s.gaps.map(g=>`<li>${g}</li>`).join('')}</ul></div>`:''}
+    </div>`;
+  openModal();
+}
+
+function openModal() {
+  $('modal').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+function closeModal() {
+  $('modal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+$('modalClose').onclick = closeModal;
+$('modal').onclick = e => { if (e.target === $('modal')) closeModal(); };
+
+/* ════════════════════════════════════════════════════════════════
+   UTILS
+════════════════════════════════════════════════════════════════ */
+function ago(ts) {
+  if (!ts) return '';
+  try {
+    const d = +new Date(ts), n = Date.now(), s = Math.floor((n-d)/1000);
+    if (s < 60)    return s + 's ago';
+    if (s < 3600)  return Math.floor(s/60) + 'm ago';
+    if (s < 86400) return Math.floor(s/3600) + 'h ago';
+    return new Date(d).toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+  } catch { return ts.slice(0,10); }
+}
+
+/* ════════════════════════════════════════════════════════════════
+   INIT
+════════════════════════════════════════════════════════════════ */
+load();
+setInterval(load, 5 * 60 * 1000);
+</script>
+</body>
+</html>
